@@ -1,8 +1,8 @@
 
 
 // Jak o czymś myślę to często nie umiem tego od razu wytłumaczyć innej osobie co tam się zrodziło w tej mojej głowie xd
-// Więc może to ci rozjaśni mój pierwszy sposób myślenia o tym
-// Przejżyj to i powiedz co ty na to
+// Więc może to sprawi, że uda ci się zrozumieć mój sposób myślenia o tym. Mam taką nadzieje
+// Przejrzyj to i powiedz co ty na to
 // No i powiedz jak ty na to patrzysz, nie na podstawie tego czegoś co zrobiłem
 
 #include <iostream>
