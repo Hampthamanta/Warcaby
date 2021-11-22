@@ -8,8 +8,10 @@ using namespace std;
 
 plansza pionek[16];
 plansza znak_na_polu[32];
+plansza wybrane_pole[32];
 
 string wybor;
+string sprawdz_pole;
 
 //      -------------------------------
 //    8 |   82      84      86      88|
@@ -75,8 +77,104 @@ void aktualizuj_plansze()
     cout << "       A   B   C   D   E   F   G   H\n";
 }
 
+void sprawdz_pozycje_pionka(string nazwa_pola)
+{
+    int nr_pola = 0;
+    cout << "\n";
+
+    for (int i = 0; i < 32; i++)
+    {
+        if (nazwa_pola == wybrane_pole[i].nazwa_pola)
+        {
+            cout << "Wybrane pole " << wybrane_pole[i].nazwa_pola << " ma indeks na plaszny rowny " << wybrane_pole[i].pole << "\n";
+            nr_pola = wybrane_pole[i].pole;
+        }
+    }
+
+    for (int j = 0; j < 16; j++)
+    {
+        if (nr_pola == pionek[j].pole)
+        {
+            cout << "Na wybranym polu zajduje sie " << pionek[j].typ << " " << pionek[j].kolor << " o indeksie " << j << endl;
+        }
+    }
+}
+
+void ruch_pionka()
+{
+    cout << "\n";
+}
+
 int main()
 {
+
+    //-------------------------------------------------------------------------------------------------- ustawienia pod sprawdzanie pionka na polu na planszy przez gracza
+
+    {
+        int n = 11;
+        for (int i = 0; i < 32; i++)
+        {
+            if (i == 4)
+                n = 22;
+            else if (i == 8)
+                n = 31;
+            else if (i == 12)
+                n = 42;
+            else if (i == 16)
+                n = 51;
+            else if (i == 20)
+                n = 62;
+            else if (i == 24)
+                n = 71;
+            else if (i == 28)
+                n = 82;
+
+            wybrane_pole[i].pole = n; // do wybierania pionka/pola przez gracza
+            n += 2;
+        }
+    }
+
+    wybrane_pole[0].nazwa_pola = "A1";
+    wybrane_pole[1].nazwa_pola = "C1";
+    wybrane_pole[2].nazwa_pola = "E1";
+    wybrane_pole[3].nazwa_pola = "G1";
+
+    wybrane_pole[4].nazwa_pola = "B2";
+    wybrane_pole[5].nazwa_pola = "D2";
+    wybrane_pole[6].nazwa_pola = "F2";
+    wybrane_pole[7].nazwa_pola = "H2";
+
+    wybrane_pole[8].nazwa_pola = "A3";
+    wybrane_pole[9].nazwa_pola = "C3";
+    wybrane_pole[10].nazwa_pola = "E3";
+    wybrane_pole[11].nazwa_pola = "G3";
+
+    wybrane_pole[12].nazwa_pola = "B4";
+    wybrane_pole[13].nazwa_pola = "D4";
+    wybrane_pole[14].nazwa_pola = "F4";
+    wybrane_pole[15].nazwa_pola = "H4";
+
+    wybrane_pole[16].nazwa_pola = "A5";
+    wybrane_pole[17].nazwa_pola = "C5";
+    wybrane_pole[18].nazwa_pola = "E5";
+    wybrane_pole[19].nazwa_pola = "G5";
+
+    wybrane_pole[20].nazwa_pola = "B6";
+    wybrane_pole[21].nazwa_pola = "D6";
+    wybrane_pole[22].nazwa_pola = "F6";
+    wybrane_pole[23].nazwa_pola = "H6";
+
+    wybrane_pole[24].nazwa_pola = "A7";
+    wybrane_pole[25].nazwa_pola = "C7";
+    wybrane_pole[26].nazwa_pola = "E7";
+    wybrane_pole[27].nazwa_pola = "G7";
+
+    wybrane_pole[28].nazwa_pola = "B8";
+    wybrane_pole[29].nazwa_pola = "D8";
+    wybrane_pole[30].nazwa_pola = "F8";
+    wybrane_pole[31].nazwa_pola = "H8";
+
+    //-------------------------------------------------------------------------------------------------- ustawienia pod sprawdzanie pionka na polu na planszy przez gracza
 
     {
         int n = 11;
@@ -113,7 +211,7 @@ int main()
         cout << "   " << i << "   " << pionek[i].znak << "   " << pionek[i].kolor << "   " << pionek[i].typ << "   " << pionek[i].pole << endl;
     }
 
-    cout << "Warcaby\n\nWpisz \"start\" lub 1 aby rozpoczac\nAby zakonczyc program \"exit\" lub 0\nAby zresetowac porgram \"reset\" lub 2\n";
+    cout << "Warcaby\n\nWpisz \"start\" lub 1 aby rozpoczac\nAby zakonczyc program \"exit\" lub 0\nAby zresetowac porgram \"reset\" lub 2\nAby wybrac pionka \"wybierz\" lub 3\n";
     while (wybor != "exit" && wybor != "0")
     {
         if (wybor == "start" || wybor == "1")
@@ -121,11 +219,19 @@ int main()
             cout << "\n      -------------------------------\n    8 |    x       x       x       x|\n    7 |x       x       x       x    |\n    6 |    x       x       x       x|\n";
             cout << "    5 |x       x       x       x    |\n    4 |    x       x       x       x|\n    3 |x       x       x       x    |\n    2 |    x       x       x       x|\n";
             cout << "    1 |x       x       x       x    |\n      -------------------------------\n       A   B   C   D   E   F   G   H\n\n\n";
+
+            aktualizuj_plansze(); // pierwsze ustawienie
         }
         else if (wybor == "reset" || wybor == "2")
         {
             system("cls");
             cout << "Warcaby\n\nWpisz \"start\" lub 1 aby rozpoczac\nAby zakonczyc program \"exit\" lub 0\nAby zresetowac porgram \"reset\" lub 2\n";
+        }
+        else if (wybor == "wybierz" || wybor == "3")
+        {
+            cout << "Podaj pole pionka: ";
+            cin >> sprawdz_pole;
+            sprawdz_pozycje_pionka(sprawdz_pole);
         }
 
         cin >> wybor;
@@ -133,19 +239,17 @@ int main()
 
     //--------------------------------------------------------------------------------------------------
 
-    aktualizuj_plansze();
+    // pionek[0].pole = 51;
+    // pionek[1].pole = 53;
+    // pionek[2].pole = 55;
+    // pionek[3].pole = 57;
 
-    pionek[0].pole = 51;
-    pionek[1].pole = 53;
-    pionek[2].pole = 55;
-    pionek[3].pole = 57;
+    // pionek[12].pole = 62;
+    // pionek[13].pole = 64;
+    // pionek[14].pole = 66;
+    // pionek[15].pole = 11;
 
-    pionek[12].pole = 62;
-    pionek[13].pole = 64;
-    pionek[14].pole = 66;
-    pionek[15].pole = 11;
-
-    aktualizuj_plansze();
+    // aktualizuj_plansze();
 
     getch();
     return 0;

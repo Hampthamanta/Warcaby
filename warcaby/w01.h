@@ -9,4 +9,5 @@ public:
     string kolor;
     string typ;
     string znak;
+    string nazwa_pola;
 };
