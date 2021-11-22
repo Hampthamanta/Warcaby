@@ -102,7 +102,7 @@ void aktualizuj_plansze()
     cout << "      +---+---+---+---+---+---+---+---+\n";
     cout << "    " << 1 << " | " << znak_na_polu[0].znak << " |   | " << znak_na_polu[1].znak << " |   | " << znak_na_polu[2].znak << " |   | " << znak_na_polu[3].znak << " |   |\n";
     cout << "      +---+---+---+---+---+---+---+---+\n";
-    cout << "       A   B   C   D   E   F   G   H\n";
+    cout << "        A   B   C   D   E   F   G   H\n";
 }
 
 void sprawdz_pozycje_pionka(string nazwa_pola)
