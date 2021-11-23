@@ -25,7 +25,6 @@ string sprawdz_pole;
 //      -------------------------------
 //       A   B   C   D   E   F   G   H
 
-
 //       +---+---+---+---+---+---+---+---+
 //     8 |   |82 |   |84 |   | 86|   | 88|
 //       +---+---+---+---+---+---+---+---+
@@ -44,7 +43,6 @@ string sprawdz_pole;
 //     1 | 11|   | 13|   | 15|   | 17|   |
 //       +---+---+---+---+---+---+---+---+
 //         A   B   C   D   E   F   G   H
-
 
 void aktualizuj_plansze()
 {
@@ -244,10 +242,6 @@ int main()
     {
         if (wybor == "start" || wybor == "1")
         {
-            cout << "\n      -------------------------------\n    8 |    x       x       x       x|\n    7 |x       x       x       x    |\n    6 |    x       x       x       x|\n";
-            cout << "    5 |x       x       x       x    |\n    4 |    x       x       x       x|\n    3 |x       x       x       x    |\n    2 |    x       x       x       x|\n";
-            cout << "    1 |x       x       x       x    |\n      -------------------------------\n       A   B   C   D   E   F   G   H\n\n\n";
-
             aktualizuj_plansze(); // pierwsze ustawienie
         }
         else if (wybor == "reset" || wybor == "2")
