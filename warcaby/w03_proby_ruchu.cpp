@@ -1,6 +1,8 @@
 //
 // Próba zrobienia funkcji co sprawdza czy pionek moze sie ruszyc i w jakim kierunku
 //
+// void ruch_pionka(int pole_pionka) - tam jest to wszystko
+//
 
 #include <iostream>
 #include <cstdlib>
