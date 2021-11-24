@@ -371,6 +371,6 @@ int main()
 
     // aktualizuj_plansze();
 
-    // getch();
+    getch();
     return 0;
 }
