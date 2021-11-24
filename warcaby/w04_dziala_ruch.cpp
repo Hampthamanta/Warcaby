@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <conio.h>
 #include <algorithm>
+#include <windows.h>
 
 using namespace std;
 
@@ -23,6 +24,7 @@ plansza wybrane_pole[32];
 string wybor;
 string sprawdz_pole;
 int numer_pola_gdzie_jest_pionek;
+bool mozliwy_ruch = false;
 
 //      -------------------------------
 //    8 |   82      84      86      88|
@@ -233,17 +235,25 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
             cout << "Pionek MOZE ruszyc sie w LEWO W DOL\n";
         }
 
-        cout << "\n\nPodaj pole na planszy gdzie chesz ruszyc wybranego pionka: ";
-        cin >> nazwa_pola_f2;
-        numer_pola_do_ruchu = sprawdz_numer_pola(nazwa_pola_f2);
-
-        if (pionek[indeks_pionka].typ == "pionek")
+        if (ruch_w_lewo_dol == true || ruch_w_lewo_gora == true || ruch_w_prawo_dol == true || ruch_w_lewo_dol == true)
         {
-            if ((pionek[indeks_pionka].pole + 11) == numer_pola_do_ruchu || (pionek[indeks_pionka].pole + 9) == numer_pola_do_ruchu || (pionek[indeks_pionka].pole - 11) == numer_pola_do_ruchu || (pionek[indeks_pionka].pole - 9) == numer_pola_do_ruchu)
+            mozliwy_ruch = true;
+        }
+
+        if (mozliwy_ruch == true)
+        {
+            cout << "\n\nPodaj pole na planszy gdzie chesz ruszyc wybranego pionka: ";
+            cin >> nazwa_pola_f2;
+            numer_pola_do_ruchu = sprawdz_numer_pola(nazwa_pola_f2);
+
+            if (pionek[indeks_pionka].typ == "pionek")
             {
-                cout << "Ruch pionka\n";
-                pionek[indeks_pionka].pole = numer_pola_do_ruchu;
-                aktualizuj_plansze();
+                if ((pionek[indeks_pionka].pole + 11) == numer_pola_do_ruchu || (pionek[indeks_pionka].pole + 9) == numer_pola_do_ruchu || (pionek[indeks_pionka].pole - 11) == numer_pola_do_ruchu || (pionek[indeks_pionka].pole - 9) == numer_pola_do_ruchu)
+                {
+                    cout << "Ruch pionka\n";
+                    pionek[indeks_pionka].pole = numer_pola_do_ruchu;
+                    aktualizuj_plansze();
+                }
             }
         }
     }
@@ -367,35 +377,60 @@ int main()
         pionek[i].typ = "pionek";
     }
 
-   cout << endl;
-   cout << "                                             __       __             __           "       << endl;
-   cout << "                        |    |      /\\      |  \\    /         /\\    |  \\   \\  /   "  << endl;
-   cout << "                        |    |     /  \\     | _/   |         /  \\   |__/    \\/    "    << endl;
-   cout << "                        | /\\ |    /----\\    | \\    |        /____\\  |  \\    |     "  << endl;
-   cout << "                        |/  \\|   /      \\   |  \\    \\___   /      \\ |__/    |     "  << endl;
-   cout << endl;
-   cout << "                                 Nacisnij dowolny przycisk aby zaczac             "     << endl;
-   getch();
+    // for (int i = 0; i < 16; i++)
+    // {
+    //     cout << "   " << i << "   " << pionek[i].znak << "   " << pionek[i].kolor << "   " << pionek[i].typ << "   " << pionek[i].pole << endl;
+    // }
+
+    cout << endl;
+    cout << "                                             __       __             __           " << endl;
+    cout << "                        |    |      /\\      |  \\    /         /\\    |  \\   \\  /   " << endl;
+    cout << "                        |    |     /  \\     | _/   |         /  \\   |__/    \\/    " << endl;
+    cout << "                        | /\\ |    /----\\    | \\    |        /____\\  |  \\    |     " << endl;
+    cout << "                        |/  \\|   /      \\   |  \\    \\___   /      \\ |__/    |     " << endl;
+    cout << endl;
+    cout << "                                 Nacisnij dowolny przycisk aby zaczac             " << endl;
+    getch();
 
     while (wybor != "exit" && wybor != "0")
     {
-        cout << "                          ------------------------------------------------\n";
-        cout << "\n\nWpisz \"start\" lub 1 aby rozpoczac\nAby zakonczyc program \"exit\" lub 0\n";
-        cout << "Aby zresetowac porgram \"reset\" lub 2\n";
+        cout << "----------------------------\n";
+        cout << "Warcaby\n\nWpisz \"start\" lub 1 aby rozpoczac\nAby zakonczyc program \"exit\" lub 0\n";
+        cout << "Aby zresetowac porgram \"reset\" lub 2\nAby wybrac pionka \"wybierz\" lub 3\n";
         cin >> wybor;
 
         if (wybor == "start" || wybor == "1")
         {
             system("cls");
             aktualizuj_plansze(); // pierwsze ustawienie
+
+        powtorka_ruchu:
             cout << "Podaj pole pionka: ";
             cin >> sprawdz_pole;
-            sprawdz_pozycje_pionka(sprawdz_pole);
+
+            if (sprawdz_pole != "exit")
+            {
+                sprawdz_pozycje_pionka(sprawdz_pole);
+
+                if (mozliwy_ruch == false)
+                {
+                    cout << "Wybrany pionek nie moze wykonac ruchu!\n";
+                    goto powtorka_ruchu;
+                }
+            }
         }
         else if (wybor == "reset" || wybor == "2")
         {
             system("cls");
         }
+
+        // else if (wybor == "ruch" || wybor == "4")
+        // {
+        //     cout << "Podaj pole pionka aby nim ruszyc(11,13,22...): ";
+        //     cin >> numer_pola_gdzie_jest_pionek;
+        //     cout << endl;
+        //     ruch_pionka(numer_pola_gdzie_jest_pionek);
+        // }
     }
 
     //--------------------------------------------------------------------------------------------------
