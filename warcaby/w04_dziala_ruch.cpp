@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <stdio.h>
 #include <conio.h>
+#include <algorithm>
 
 using namespace std;
 
@@ -110,6 +111,8 @@ void aktualizuj_plansze()
 
 int sprawdz_numer_pola(string nazwa_pola_f)
 {
+    transform(nazwa_pola_f.begin(), nazwa_pola_f.end(), nazwa_pola_f.begin(), ::toupper);
+
     int nr_pola = 0;
 
     for (int i = 0; i < 32; i++)
@@ -364,31 +367,34 @@ int main()
         pionek[i].typ = "pionek";
     }
 
-    for (int i = 0; i < 16; i++)
-    {
-        cout << "   " << i << "   " << pionek[i].znak << "   " << pionek[i].kolor << "   " << pionek[i].typ << "   " << pionek[i].pole << endl;
-    }
+   cout << endl;
+   cout << "                                             __       __             __           "       << endl;
+   cout << "                        |    |      /\\      |  \\    /         /\\    |  \\   \\  /   "  << endl;
+   cout << "                        |    |     /  \\     | _/   |         /  \\   |__/    \\/    "    << endl;
+   cout << "                        | /\\ |    /----\\    | \\    |        /____\\  |  \\    |     "  << endl;
+   cout << "                        |/  \\|   /      \\   |  \\    \\___   /      \\ |__/    |     "  << endl;
+   cout << endl;
+   cout << "                                 Nacisnij dowolny przycisk aby zaczac             "     << endl;
+   getch();
 
     while (wybor != "exit" && wybor != "0")
     {
-        cout << "----------------------------\n";
-        cout << "Warcaby\n\nWpisz \"start\" lub 1 aby rozpoczac\nAby zakonczyc program \"exit\" lub 0\n";
-        cout << "Aby zresetowac porgram \"reset\" lub 2\nAby wybrac pionka i nim ruszyc \"wybierz\" lub 3\n";
+        cout << "                          ------------------------------------------------\n";
+        cout << "\n\nWpisz \"start\" lub 1 aby rozpoczac\nAby zakonczyc program \"exit\" lub 0\n";
+        cout << "Aby zresetowac porgram \"reset\" lub 2\n";
         cin >> wybor;
 
         if (wybor == "start" || wybor == "1")
         {
+            system("cls");
             aktualizuj_plansze(); // pierwsze ustawienie
+            cout << "Podaj pole pionka: ";
+            cin >> sprawdz_pole;
+            sprawdz_pozycje_pionka(sprawdz_pole);
         }
         else if (wybor == "reset" || wybor == "2")
         {
             system("cls");
-        }
-        else if (wybor == "wybierz" || wybor == "3")
-        {
-            cout << "Podaj pole pionka: ";
-            cin >> sprawdz_pole;
-            sprawdz_pozycje_pionka(sprawdz_pole);
         }
     }
 
