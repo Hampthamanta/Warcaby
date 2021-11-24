@@ -240,6 +240,9 @@ int main()
     cout << "Warcaby\n\nWpisz \"start\" lub 1 aby rozpoczac\nAby zakonczyc program \"exit\" lub 0\nAby zresetowac porgram \"reset\" lub 2\nAby wybrac pionka \"wybierz\" lub 3\n";
     while (wybor != "exit" && wybor != "0")
     {
+        cout << "Warcaby\n\nWpisz \"start\" lub 1 aby rozpoczac\nAby zakonczyc program \"exit\" lub 0\nAby zresetowac porgram \"reset\" lub 2\nAby wybrac pionka \"wybierz\" lub 3\n";
+        cin >> wybor;
+
         if (wybor == "start" || wybor == "1")
         {
             aktualizuj_plansze(); // pierwsze ustawienie
@@ -255,8 +258,6 @@ int main()
             cin >> sprawdz_pole;
             sprawdz_pozycje_pionka(sprawdz_pole);
         }
-
-        cin >> wybor;
     }
 
     //--------------------------------------------------------------------------------------------------
