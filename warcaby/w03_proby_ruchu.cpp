@@ -25,7 +25,6 @@ string wybor;
 string sprawdz_pole;
 int numer_pola_gdzie_jest_pionek;
 bool mozliwy_ruch = false;
-bool znaleziono_pola = false;
 
 //      -------------------------------
 //    8 |   82      84      86      88|
@@ -64,7 +63,7 @@ void aktualizuj_plansze()
 
     int n = 11;
 
-    for (int k = 0; k < 32; k++)
+    for (int k = 0; k < 32; k++) // ustawienie znakow na polach czarnych
     {
         znak_na_polu[k].znak = "x";
     }
@@ -85,7 +84,7 @@ void aktualizuj_plansze()
         else if (i == 28)
             n = 82;
 
-        for (int j = 0; j < 16; j++)
+        for (int j = 0; j < 16; j++) // wstawienia znakow pionkow na pola czarne
         {
             if (pionek[j].pole == n)
                 znak_na_polu[i].znak = pionek[j].znak;
@@ -94,7 +93,8 @@ void aktualizuj_plansze()
         n += 2;
     }
 
-    cout << "\n      +---+---+---+---+---+---+---+---+\n";
+    // rysowanie planszy w konsoli
+    cout << "\n\n      +---+---+---+---+---+---+---+---+\n";
     cout << "    " << 8 << " |   | " << znak_na_polu[28].znak << " |   | " << znak_na_polu[29].znak << " |   | " << znak_na_polu[30].znak << " |   | " << znak_na_polu[31].znak << " |\n";
     cout << "      +---+---+---+---+---+---+---+---+\n";
     cout << "    " << 7 << " | " << znak_na_polu[24].znak << " |   | " << znak_na_polu[25].znak << " |   | " << znak_na_polu[26].znak << " |   | " << znak_na_polu[27].znak << " |   |\n";
@@ -111,12 +111,12 @@ void aktualizuj_plansze()
     cout << "      +---+---+---+---+---+---+---+---+\n";
     cout << "    " << 1 << " | " << znak_na_polu[0].znak << " |   | " << znak_na_polu[1].znak << " |   | " << znak_na_polu[2].znak << " |   | " << znak_na_polu[3].znak << " |   |\n";
     cout << "      +---+---+---+---+---+---+---+---+\n";
-    cout << "        A   B   C   D   E   F   G   H\n";
+    cout << "        A   B   C   D   E   F   G   H\n\n";
 }
 
-int sprawdz_numer_pola(string nazwa_pola_f)
+int sprawdz_numer_pola(string nazwa_pola_f) // funkcja sprawdzajaca podana nazwe pola przez gracza i zwraca numer tego pola, jezeli jest to pole czarne(uzytkowe)
 {
-    transform(nazwa_pola_f.begin(), nazwa_pola_f.end(), nazwa_pola_f.begin(), ::toupper);
+    transform(nazwa_pola_f.begin(), nazwa_pola_f.end(), nazwa_pola_f.begin(), ::toupper); // do obslugi malych liter
 
     int nr_pola = 0;
 
@@ -129,11 +129,11 @@ int sprawdz_numer_pola(string nazwa_pola_f)
         }
     }
 
-    return nr_pola;
+    return nr_pola; // gdy gracz nie poda czarnego pola to funkcja zwraca 0
 }
 
-int sprawdz_indeks_pionka(int nr_pola)
-{
+int sprawdz_indeks_pionka(int nr_pola) // funkcja sprawdza czy na podanym polu znajduje sie pionek, jezeli tak to zwraca jego inkeds(id),
+{                                      //                                      jezeli nie ma tam pionka to zwraca 0
     int id_pola = 0;
 
     for (int j = 0; j < 16; j++) // to jest na razie dla wszystkich pionkow. Pozniej podzielic na biale i czarne
@@ -142,7 +142,6 @@ int sprawdz_indeks_pionka(int nr_pola)
         {
             id_pola = j;
             cout << "Na wybranym polu zajduje sie " << pionek[j].typ << " " << pionek[j].kolor << " o indeksie " << j << endl;
-            // przydzielenie gdzies nr_pola jako pola gdzie znajduje sie podany pionek oraz indeksu pionka
         }
     }
 
