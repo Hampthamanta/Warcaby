@@ -25,6 +25,7 @@ string wybor;
 string sprawdz_pole;
 int numer_pola_gdzie_jest_pionek;
 bool mozliwy_ruch = false;
+bool znaleziono_pola = false;
 
 //      -------------------------------
 //    8 |   82      84      86      88|
@@ -59,6 +60,8 @@ bool mozliwy_ruch = false;
 
 void aktualizuj_plansze()
 {
+    system("cls");
+
     int n = 11;
 
     for (int k = 0; k < 32; k++)
@@ -231,32 +234,51 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
     podano_zle_pole_do_ruchu:
         cout << "\n\nPodaj pole na planszy gdzie chesz ruszyc wybranego pionka: ";
         cin >> nazwa_pola_f2;
-        numer_pola_do_ruchu = sprawdz_numer_pola(nazwa_pola_f2);
 
+        if (nazwa_pola_f2 != "0") // okienko wyjscia z wyboru pola
         {
-            bool znaleziono = false;
-            for (int i = 0; i < 32; i++)
+
+            numer_pola_do_ruchu = sprawdz_numer_pola(nazwa_pola_f2);
+
             {
-                if (numer_pola_do_ruchu == wybrane_pole[i].pole)
-                    znaleziono = true;
+                bool znaleziono_poprawne_pole = false;
+                for (int i = 0; i < 32; i++)
+                {
+                    if (numer_pola_do_ruchu == wybrane_pole[i].pole)
+                        znaleziono_poprawne_pole = true;
+                }
+
+                for (int i = 0; i < 16; i++)
+                {
+                    if (numer_pola_do_ruchu == pionek[i].pole)
+                        znaleziono_poprawne_pole = false;
+                }
+
+                if (znaleziono_poprawne_pole == false)
+                    goto podano_zle_pole_do_ruchu;
             }
 
-            if (znaleziono == false)
+            if (numer_pola_do_ruchu == pionek[indeks_pionka].pole)
                 goto podano_zle_pole_do_ruchu;
-        }
 
-        if (numer_pola_do_ruchu == pionek[indeks_pionka].pole)
-            goto podano_zle_pole_do_ruchu; ////////////////////////////////////////////////////////////
-
-        if (pionek[indeks_pionka].typ == "pionek")
-        {
-            if ((pionek[indeks_pionka].pole + 11) == numer_pola_do_ruchu || (pionek[indeks_pionka].pole + 9) == numer_pola_do_ruchu || (pionek[indeks_pionka].pole - 11) == numer_pola_do_ruchu || (pionek[indeks_pionka].pole - 9) == numer_pola_do_ruchu)
+            if (pionek[indeks_pionka].typ == "pionek")
             {
-                cout << "Ruch pionka\n";
-                pionek[indeks_pionka].pole = numer_pola_do_ruchu;
-                aktualizuj_plansze();
+                if ((((pionek[indeks_pionka].pole + 11) == numer_pola_do_ruchu) && (ruch_w_prawo_gora == true)) || (((pionek[indeks_pionka].pole + 9) == numer_pola_do_ruchu) && (ruch_w_lewo_gora == true)) || (((pionek[indeks_pionka].pole - 11) == numer_pola_do_ruchu) && (ruch_w_lewo_dol == true)) || (((pionek[indeks_pionka].pole - 9) == numer_pola_do_ruchu) && (ruch_w_prawo_dol == true)))
+                {
+                    cout << "Ruch pionka\n";
+                    pionek[indeks_pionka].pole = numer_pola_do_ruchu;
+                    aktualizuj_plansze();
+                }
+                else // nie wykonano ruchu
+                {
+                    goto podano_zle_pole_do_ruchu;
+                }
             }
         }
+    }
+    else
+    {
+        return;
     }
 
     cout << endl;
@@ -272,6 +294,8 @@ void sprawdz_pozycje_pionka(string nazwa_pola)
     if (nr_pola == 0)
         return;
     id_pola = sprawdz_indeks_pionka(nr_pola);
+    if (id_pola == 0)
+        return;
 
     ruch_pionka(nr_pola, id_pola);
 }
@@ -392,6 +416,12 @@ int main()
     cout << "                                 Nacisnij dowolny przycisk aby zaczac             " << endl;
     getch();
 
+    //
+    //
+    pionek[12].pole = 33; // ustawienia pionka do testow
+    //
+    //
+
     while (wybor != "exit" && wybor != "0")
     {
         cout << "----------------------------\n";
@@ -414,10 +444,10 @@ int main()
 
                 if (mozliwy_ruch == false)
                 {
-                    cout << "Wybrany pionek nie moze wykonac ruchu!\n";
+                    cout << "Wybrany pionek nie moze wykonac ruchu lub nie znaleziono pionka!\n";
                     goto powtorka_ruchu;
                 }
-                mozliwy_ruch == false;
+                mozliwy_ruch = false;
             }
         }
         else if (wybor == "reset" || wybor == "2")
