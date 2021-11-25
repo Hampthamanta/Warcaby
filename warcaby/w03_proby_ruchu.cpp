@@ -206,6 +206,7 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
     if (ruch_w_prawo_gora == true)
     {
         cout << "Pionek MOZE ruszyc sie w PRAWO DO GORY\n";
+        cout << "\n             pmoze w prawo do gory\n";
     }
 
     if (ruch_w_lewo_gora == true)
@@ -223,13 +224,19 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
         cout << "Pionek MOZE ruszyc sie w LEWO W DOL\n";
     }
 
-    if (ruch_w_lewo_dol == true || ruch_w_lewo_gora == true || ruch_w_prawo_dol == true || ruch_w_lewo_dol == true)
+    cout << "\n                                   " << mozliwy_ruch << "           przed funkcja aktywujaco to cos\n\n";
+
+    if (ruch_w_prawo_gora == true || ruch_w_lewo_gora == true || ruch_w_prawo_dol == true || ruch_w_lewo_dol == true)
     {
         mozliwy_ruch = true;
+        cout << "\n                                   " << mozliwy_ruch << "           w funkcji aktywujacej to cos\n\n";
     }
 
     if (mozliwy_ruch == true)
     {
+
+        cout << "\n                                   " << mozliwy_ruch << "           w funkcji aktywujacej to cos\n\n";
+
     podano_zle_pole_do_ruchu:
         cout << "\n\nPodaj pole na planszy gdzie chesz ruszyc wybranego pionka: ";
         cin >> nazwa_pola_f2;
@@ -253,12 +260,9 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
                         znaleziono_poprawne_pole = false;
                 }
 
-                if (znaleziono_poprawne_pole == false)
+                if ((znaleziono_poprawne_pole == false) || (numer_pola_do_ruchu == pionek[indeks_pionka].pole))
                     goto podano_zle_pole_do_ruchu;
             }
-
-            if (numer_pola_do_ruchu == pionek[indeks_pionka].pole)
-                goto podano_zle_pole_do_ruchu;
 
             if (pionek[indeks_pionka].typ == "pionek")
             {
