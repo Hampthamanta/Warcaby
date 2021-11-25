@@ -287,7 +287,6 @@ void sprawdz_pozycje_pionka(string nazwa_pola)
 {
     int nr_pola = 0;
     int id_pola = 0;
-    cout << "\n";
 
     nr_pola = sprawdz_numer_pola(nazwa_pola);
     if (nr_pola == 0)
@@ -453,14 +452,6 @@ int main()
         {
             system("cls");
         }
-
-        // else if (wybor == "ruch" || wybor == "4")
-        // {
-        //     cout << "Podaj pole pionka aby nim ruszyc(11,13,22...): ";
-        //     cin >> numer_pola_gdzie_jest_pionek;
-        //     cout << endl;
-        //     ruch_pionka(numer_pola_gdzie_jest_pionek);
-        // }
     }
 
     //--------------------------------------------------------------------------------------------------
