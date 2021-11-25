@@ -2,7 +2,8 @@
 #include <cstdlib>
 #include <stdio.h>
 #include <conio.h>
-// #include "w01.h"
+#include <algorithm>
+#include <windows.h>
 
 using namespace std;
 
@@ -23,6 +24,7 @@ plansza wybrane_pole[32];
 string wybor;
 string sprawdz_pole;
 int numer_pola_gdzie_jest_pionek;
+bool mozliwy_ruch = false;
 
 //      -------------------------------
 //    8 |   82      84      86      88|
@@ -109,6 +111,41 @@ void aktualizuj_plansze()
     cout << "        A   B   C   D   E   F   G   H\n";
 }
 
+int sprawdz_numer_pola(string nazwa_pola_f)
+{
+    transform(nazwa_pola_f.begin(), nazwa_pola_f.end(), nazwa_pola_f.begin(), ::toupper);
+
+    int nr_pola = 0;
+
+    for (int i = 0; i < 32; i++)
+    {
+        if (nazwa_pola_f == wybrane_pole[i].nazwa_pola)
+        {
+            cout << "Wybrane pole " << wybrane_pole[i].nazwa_pola << " ma indeks na plaszny rowny " << wybrane_pole[i].pole << "\n";
+            nr_pola = wybrane_pole[i].pole;
+        }
+    }
+
+    return nr_pola;
+}
+
+int sprawdz_indeks_pionka(int nr_pola)
+{
+    int id_pola = 0;
+
+    for (int j = 0; j < 16; j++) // to jest na razie dla wszystkich pionkow. Pozniej podzielic na biale i czarne
+    {
+        if (nr_pola == pionek[j].pole)
+        {
+            id_pola = j;
+            cout << "Na wybranym polu zajduje sie " << pionek[j].typ << " " << pionek[j].kolor << " o indeksie " << j << endl;
+            // przydzielenie gdzies nr_pola jako pola gdzie znajduje sie podany pionek oraz indeksu pionka
+        }
+    }
+
+    return id_pola;
+}
+
 void ruch_pionka(int pole_pionka, int indeks_pionka)
 {
 
@@ -129,6 +166,9 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
 
     if (znaleziono_pionka == true)
     {
+        string nazwa_pola_f2;
+        int numer_pola_do_ruchu = 0;
+
         if (pionek[indeks_pionka].kolor == "bialy" && pionek[indeks_pionka].typ == "pionek")
         {
             ruch_w_prawo_dol = false;
@@ -194,46 +234,52 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
         {
             cout << "Pionek MOZE ruszyc sie w LEWO W DOL\n";
         }
+
+        if (ruch_w_lewo_dol == true || ruch_w_lewo_gora == true || ruch_w_prawo_dol == true || ruch_w_lewo_dol == true)
+        {
+            mozliwy_ruch = true;
+        }
+
+        if (mozliwy_ruch == true)
+        {
+        podano_zle_pole_do_ruchu:
+            cout << "\n\nPodaj pole na planszy gdzie chesz ruszyc wybranego pionka: ";
+            cin >> nazwa_pola_f2;
+            numer_pola_do_ruchu = sprawdz_numer_pola(nazwa_pola_f2);
+
+            {
+                bool znaleziono = false;
+                for (int i = 0; i < 32; i++)
+                {
+                    if (numer_pola_do_ruchu == wybrane_pole[i].pole)
+                        znaleziono = true;
+                }
+
+                if (znaleziono == false)
+                    goto podano_zle_pole_do_ruchu;
+            }
+
+            if (numer_pola_do_ruchu == pionek[indeks_pionka].pole)
+                goto podano_zle_pole_do_ruchu; ////////////////////////////////////////////////////////////
+
+            if (pionek[indeks_pionka].typ == "pionek")
+            {
+                if ((pionek[indeks_pionka].pole + 11) == numer_pola_do_ruchu || (pionek[indeks_pionka].pole + 9) == numer_pola_do_ruchu || (pionek[indeks_pionka].pole - 11) == numer_pola_do_ruchu || (pionek[indeks_pionka].pole - 9) == numer_pola_do_ruchu)
+                {
+                    cout << "Ruch pionka\n";
+                    pionek[indeks_pionka].pole = numer_pola_do_ruchu;
+                    aktualizuj_plansze();
+                }
+            }
+            mozliwy_ruch = false; // resetowanie flagi
+        }
+        znaleziono_pionka = false; //resetowanie flagi
     }
     else
     {
-        cout << "Na tym polu nie ma rzadnego pionka!\n";
+        // cout << "Na tym polu nie ma rzadnego pionka!\n";
     }
-
-    cout << "\n";
-}
-
-int sprawdz_numer_pola(string nazwa_pola_f)
-{
-    int nr_pola = 0;
-
-    for (int i = 0; i < 32; i++)
-    {
-        if (nazwa_pola_f == wybrane_pole[i].nazwa_pola)
-        {
-            cout << "Wybrane pole " << wybrane_pole[i].nazwa_pola << " ma indeks na plaszny rowny " << wybrane_pole[i].pole << "\n";
-            nr_pola = wybrane_pole[i].pole;
-        }
-    }
-
-    return nr_pola;
-}
-
-int sprawdz_indeks_pionka(int nr_pola)
-{
-    int id_pola = 0;
-
-    for (int j = 0; j < 16; j++) // to jest na razie dla wszystkich pionkow. Pozniej podzielic na biale i czarne
-    {
-        if (nr_pola == pionek[j].pole)
-        {
-            id_pola = j;
-            cout << "Na wybranym polu zajduje sie " << pionek[j].typ << " " << pionek[j].kolor << " o indeksie " << j << endl;
-            // przydzielenie gdzies nr_pola jako pola gdzie znajduje sie podany pionek oraz indeksu pionka
-        }
-    }
-
-    return id_pola;
+    cout << endl;
 }
 
 void sprawdz_pozycje_pionka(string nazwa_pola)
@@ -243,6 +289,8 @@ void sprawdz_pozycje_pionka(string nazwa_pola)
     cout << "\n";
 
     nr_pola = sprawdz_numer_pola(nazwa_pola);
+    if (nr_pola == 0)
+        return;
     id_pola = sprawdz_indeks_pionka(nr_pola);
 
     ruch_pionka(nr_pola, id_pola);
@@ -349,32 +397,53 @@ int main()
         pionek[i].typ = "pionek";
     }
 
-    for (int i = 0; i < 16; i++)
-    {
-        cout << "   " << i << "   " << pionek[i].znak << "   " << pionek[i].kolor << "   " << pionek[i].typ << "   " << pionek[i].pole << endl;
-    }
+    // for (int i = 0; i < 16; i++)
+    // {
+    //     cout << "   " << i << "   " << pionek[i].znak << "   " << pionek[i].kolor << "   " << pionek[i].typ << "   " << pionek[i].pole << endl;
+    // }
+
+    cout << endl;
+    cout << "                                             __       __             __           " << endl;
+    cout << "                        |    |      /\\      |  \\    /         /\\    |  \\   \\  /   " << endl;
+    cout << "                        |    |     /  \\     | _/   |         /  \\   |__/    \\/    " << endl;
+    cout << "                        | /\\ |    /----\\    | \\    |        /____\\  |  \\    |     " << endl;
+    cout << "                        |/  \\|   /      \\   |  \\    \\___   /      \\ |__/    |     " << endl;
+    cout << endl;
+    cout << "                                 Nacisnij dowolny przycisk aby zaczac             " << endl;
+    getch();
 
     while (wybor != "exit" && wybor != "0")
     {
         cout << "----------------------------\n";
         cout << "Warcaby\n\nWpisz \"start\" lub 1 aby rozpoczac\nAby zakonczyc program \"exit\" lub 0\n";
-        cout << "Aby zresetowac porgram \"reset\" lub 2\nAby wybrac pionka \"wybierz\" lub 3\n";
+        cout << "Aby zresetowac porgram \"reset\" lub 2\n";
         cin >> wybor;
 
         if (wybor == "start" || wybor == "1")
         {
+            system("cls");
             aktualizuj_plansze(); // pierwsze ustawienie
+
+        powtorka_ruchu:
+            cout << "Podaj pole pionka: ";
+            cin >> sprawdz_pole;
+
+            if (sprawdz_pole != "exit" && sprawdz_pole != "0") // do przerwania podawania pola
+            {
+                sprawdz_pozycje_pionka(sprawdz_pole);
+
+                if (mozliwy_ruch == false)
+                {
+                    cout << "Wybrany pionek nie moze wykonac ruchu!\n";
+                    goto powtorka_ruchu;
+                }
+            }
         }
         else if (wybor == "reset" || wybor == "2")
         {
             system("cls");
         }
-        else if (wybor == "wybierz" || wybor == "3")
-        {
-            cout << "Podaj pole pionka: ";
-            cin >> sprawdz_pole;
-            sprawdz_pozycje_pionka(sprawdz_pole);
-        }
+
         // else if (wybor == "ruch" || wybor == "4")
         // {
         //     cout << "Podaj pole pionka aby nim ruszyc(11,13,22...): ";
