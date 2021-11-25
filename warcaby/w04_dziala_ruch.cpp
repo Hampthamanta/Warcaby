@@ -153,6 +153,8 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
     bool ruch_w_prawo_gora = true, ruch_w_lewo_gora = true, ruch_w_prawo_dol = true, ruch_w_lewo_dol = true;
     bool znaleziono_pionka = false;
 
+    bool zbijanie_prawo_gora = true, zbijanie_lewo_gora = true, zbijanie_prawo_dol = true, zbijanie_lewo_dol = true;
+
     for (int j = 0; j < 16; j++)
     {
         if (pole_pionka == pionek[j].pole)
@@ -173,6 +175,8 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
         {
             ruch_w_prawo_dol = false;
             ruch_w_lewo_dol = false;
+            zbijanie_prawo_dol = false;
+            zbijanie_lewo_dol = false;
 
             for (int i = 0; i < 16; i++)
             {
@@ -262,6 +266,55 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
         cout << "Na tym polu nie ma rzadnego pionka!\n";
     }
     cout << endl;
+}
+
+// Zbijanie pionków
+
+if (pionek[indeks_pionka].kolor == "bialy" && pionek[indeks_pionka].typ == "pionek")
+{
+    zbijanie_prawo_dol = false;
+    zbijanie_lewo_dol = false;
+
+
+    for (int i = 0; i < 16; i++)
+    {    // sprawdzam pola na ktore po prostu nie moze sie ruszyc
+        if (zbijanie_prawo_gora == true && (pole_pionka + 22) == pionek[i].pole || pionek[indeks_pionka].pole == 71 || pionek[indeks_pionka].pole == 82 || pionek[indeks_pionka].pole == 73 || pionek[indeks_pionka].pole == 84 || pionek[indeks_pionka].pole == 75 || pionek[indeks_pionka].pole == 86 || pionek[indeks_pionka].pole == 77 || pionek[indeks_pionka].pole == 88 || pionek[indeks_pionka].pole == 57 || pionek[indeks_pionka].pole == 68 || pionek[indeks_pionka].pole == 37 || pionek[indeks_pionka].pole == 48 || pionek[indeks_pionka].pole == 17 || pionek[indeks_pionka].pole == 28 )
+        {
+            // sprawdzanie czy stoi tam pionek
+            if (zbijanie_prawo_gora == true && (pole_pionka + 11) == pionek[i].pole);
+            {
+                //co sie stanie jesli bedzie tam bialy pionek (sprawdza który pionek ma to pole i sprawdza jego kolor
+                for (i = 0; i < 16; i++)
+                {
+                    if (pionek[i].pole == (pole_pionka + 11))
+                    {
+                        if (pionek[i].kolor == "bialy")
+                        {
+                            cout << "NIE MOZESZ ZBIC SWOJEGO PIONKA" << endl;
+                            zbijanie_prawo_gora = false;
+                            // tutaj musi wróciæ do miejsca gdzie wybiera³o siê pole
+
+                        } 
+                        else
+                        {
+                            cout << "ZBIJASZ PIONKA PRZECIWNIKA" << endl;
+                            pionek[i].pole == 0;
+                        }
+                    }
+                }
+
+            }
+            
+            zbijanie_prawo_gora = false;
+            cout << "Pionek NIE moze zbijaæ w PRAWO DO GORY\n";
+        }
+        if (zbijanie_lewo_gora == true && (pole_pionka + 18) == pionek[i].pole || pionek[indeks_pionka].pole == 11 || pionek[indeks_pionka].pole == 22 || pionek[indeks_pionka].pole == 31 || pionek[indeks_pionka].pole == 42 || pionek[indeks_pionka].pole == 51 || pionek[indeks_pionka].pole == 62 || pionek[indeks_pionka].pole == 71 || pionek[indeks_pionka].pole == 82 || pionek[indeks_pionka].pole == 73 || pionek[indeks_pionka].pole == 84 || pionek[indeks_pionka].pole == 75 || pionek[indeks_pionka].pole == 86 || pionek[indeks_pionka].pole == 77 || pionek[indeks_pionka].pole == 88 )
+        {
+           zbijanie_lewo_gora = false;
+            cout << "Pionek NIE moze zbijaæ w LEWO DO GORY\n";
+        }
+    }
+}
 }
 
 void sprawdz_pozycje_pionka(string nazwa_pola)
