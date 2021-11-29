@@ -286,8 +286,9 @@ void sprawdz_pozycje_pionka(string nazwa_pola)
     if (nr_pola == 0)
         return;
     id_pola = sprawdz_indeks_pionka(nr_pola);
-    if (id_pola == 0)
-        return;
+    if
+        if (id_pola == -1) // nie moze byc 0, bo to jest pierwszy indeks pionka
+            return;
 
     ruch_pionka(nr_pola, id_pola);
 }
