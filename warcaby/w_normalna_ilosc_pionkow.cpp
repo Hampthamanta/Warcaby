@@ -163,14 +163,15 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
         ruch_w_prawo_dol = false;
         ruch_w_lewo_dol = false;
 
-        for (int i = 0; i < 12; i++)
+        for (int i = 0; i < 24; i++)
         {
-            if (ruch_w_prawo_gora == true && ((pole_pionka + 11) == pionek[i].pole || pionek[indeks_pionka].pole == 88 || pionek[indeks_pionka].pole == 68 || pionek[indeks_pionka].pole == 48 || pionek[indeks_pionka].pole == 28))
+
+            if (ruch_w_prawo_gora == true && ((pole_pionka + 11) == pionek[i].pole || pionek[indeks_pionka].pole == 88 || pionek[indeks_pionka].pole == 68 || pionek[indeks_pionka].pole == 48 || pionek[indeks_pionka].pole == 28 || pionek[indeks_pionka].pole == 86 || pionek[indeks_pionka].pole == 84 || pionek[indeks_pionka].pole == 82))
             {
                 ruch_w_prawo_gora = false;
                 cout << "Pionek NIE moze ruszyc sie w PRAWO DO GORY\n";
             }
-            if (ruch_w_lewo_gora == true && ((pole_pionka + 9) == pionek[i].pole || pionek[indeks_pionka].pole == 71 || pionek[indeks_pionka].pole == 51 || pionek[indeks_pionka].pole == 31 || pionek[indeks_pionka].pole == 11))
+            if (ruch_w_lewo_gora == true && ((pole_pionka + 9) == pionek[i].pole || pionek[indeks_pionka].pole == 71 || pionek[indeks_pionka].pole == 51 || pionek[indeks_pionka].pole == 31 || pionek[indeks_pionka].pole == 11 || pionek[indeks_pionka].pole == 88 || pionek[indeks_pionka].pole == 86 || pionek[indeks_pionka].pole == 84 || pionek[indeks_pionka].pole == 82))
             {
                 ruch_w_lewo_gora = false;
                 cout << "Pionek NIE moze ruszyc sie w LEWO DO GORY\n";
@@ -182,24 +183,19 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
         ruch_w_prawo_gora = false;
         ruch_w_lewo_gora = false;
 
-        for (int i = 12; i < 24; i++)
+        for (int i = 0; i < 24; i++)
         {
-            if (ruch_w_prawo_dol == true)
+
+            if (ruch_w_prawo_dol == true && ((pole_pionka - 9) == pionek[i].pole || pionek[indeks_pionka].pole == 88 || pionek[indeks_pionka].pole == 68 || pionek[indeks_pionka].pole == 48 || pionek[indeks_pionka].pole == 28 || pionek[indeks_pionka].pole == 11 || pionek[indeks_pionka].pole == 13 || pionek[indeks_pionka].pole == 15 || pionek[indeks_pionka].pole == 17))
             {
-                if ((pole_pionka - 9) == pionek[i].pole || pionek[indeks_pionka].pole == 88 || pionek[indeks_pionka].pole == 68 || pionek[indeks_pionka].pole == 48 || pionek[indeks_pionka].pole == 28)
-                {
-                    ruch_w_prawo_dol = false;
-                    cout << "Pionek NIE moze ruszyc sie w PRAWO W DOL\n";
-                }
+                ruch_w_prawo_dol = false;
+                cout << "Pionek NIE moze ruszyc sie w PRAWO W DOL\n";
             }
 
-            if (ruch_w_lewo_dol == true)
+            if (ruch_w_lewo_dol == true && ((pole_pionka - 11) == pionek[i].pole || pionek[indeks_pionka].pole == 71 || pionek[indeks_pionka].pole == 51 || pionek[indeks_pionka].pole == 31 || pionek[indeks_pionka].pole == 11 || pionek[indeks_pionka].pole == 13 || pionek[indeks_pionka].pole == 15 || pionek[indeks_pionka].pole == 17))
             {
-                if ((pole_pionka - 11) == pionek[i].pole || pionek[indeks_pionka].pole == 71 || pionek[indeks_pionka].pole == 51 || pionek[indeks_pionka].pole == 31 || pionek[indeks_pionka].pole == 11)
-                {
-                    ruch_w_lewo_dol = false;
-                    cout << "Pionek NIE moze ruszyc sie w LEWO W DOL\n";
-                }
+                ruch_w_lewo_dol = false;
+                cout << "Pionek NIE moze ruszyc sie w LEWO W DOL\n";
             }
         }
     }
@@ -207,7 +203,6 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
     if (ruch_w_prawo_gora == true)
     {
         cout << "Pionek MOZE ruszyc sie w PRAWO DO GORY\n";
-        cout << "\n             pmoze w prawo do gory\n";
     }
 
     if (ruch_w_lewo_gora == true)
@@ -225,21 +220,15 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
         cout << "Pionek MOZE ruszyc sie w LEWO W DOL\n";
     }
 
-    cout << "\n                                   " << mozliwy_ruch << "           przed funkcja aktywujaco to cos\n\n";
-
     if (ruch_w_prawo_gora == true || ruch_w_lewo_gora == true || ruch_w_prawo_dol == true || ruch_w_lewo_dol == true)
     {
         mozliwy_ruch = true;
-        cout << "\n                                   " << mozliwy_ruch << "           w funkcji aktywujacej to cos\n\n";
     }
 
     if (mozliwy_ruch == true)
     {
-
-        cout << "\n                                   " << mozliwy_ruch << "           w funkcji aktywujacej to cos\n\n";
-
     podano_zle_pole_do_ruchu:
-        cout << "\n\nPodaj pole na planszy gdzie chesz ruszyc wybranego pionka: ";
+        cout << "\nPodaj pole na planszy gdzie chesz ruszyc wybranego pionka: ";
         cin >> nazwa_pola_f2;
 
         if (nazwa_pola_f2 != "0") // okienko wyjscia z wyboru pola
