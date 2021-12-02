@@ -179,6 +179,13 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
 
     // pole_pionka jest podane w fukcnji
     bool ruch_w_prawo_gora = true, ruch_w_lewo_gora = true, ruch_w_prawo_dol = true, ruch_w_lewo_dol = true;
+    int liczba_ruchow_w_prawo_gora_damki = 0, liczba_ruchow_w_lewo_gora_damki = 0, liczba_ruchow_w_prawo_dol_damki = 0, liczba_ruchow_w_lewo_dol_damki = 0;
+    int pola_gdzie_damka_moze_sie_ruszyc[32];
+
+    for (int i = 0; i < 32; i++)
+    {
+        pola_gdzie_damka_moze_sie_ruszyc[i] = 0; // wyczyszczenie komurek pamieci
+    }
 
     string nazwa_pola_f2;
     int numer_pola_do_ruchu = 0;
@@ -249,15 +256,14 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
             }
         }
     }
-    else if (pionek[indeks_pionka].typ == "damka") ///////////////////////////////////////////////////////////////////////// DAMKI
+    else if (pionek[indeks_pionka].typ == "damka") //////////////////////////////////////////////////////////////// DAMKI SPRAWDZANIE RUCHU
     {
         cout << "\nDAMKA\n";
         ruch_w_prawo_gora = false;
         ruch_w_prawo_dol = false;
-        ruch_w_lewo_gora = false; // DO TESTU !!
+        ruch_w_lewo_gora = false; // te sa do zwyklych pionkow
         ruch_w_lewo_dol = false;
 
-        int liczba_ruchow_w_prawo_gora_damki = 0, liczba_ruchow_w_lewo_gora_damki = 0, liczba_ruchow_w_prawo_dol_damki = 0, liczba_ruchow_w_lewo_dol_damki = 0;
         int id_pionka = -1;
         int szukane_pole = 0;
 
@@ -277,6 +283,7 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
                     if (id_pionka == -1)
                     {
                         liczba_ruchow_w_prawo_gora_damki++;
+                        pola_gdzie_damka_moze_sie_ruszyc[rpg] = szukane_pole;
                         rpg = 8;
                     }
                     else
@@ -292,6 +299,7 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
                     if (id_pionka == -1)
                     {
                         liczba_ruchow_w_prawo_gora_damki++;
+                        pola_gdzie_damka_moze_sie_ruszyc[rpg] = szukane_pole;
                         // cout << "      moziwy ruch na pole " << szukane_pole << "\n\n";
                     }
                     else
@@ -317,9 +325,10 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
                 if (szukane_pole == 86 || szukane_pole == 84 || szukane_pole == 82 || szukane_pole == 71 || szukane_pole == 51 || szukane_pole == 31)
                 {
                     id_pionka = sprawdz_indeks_pionka(szukane_pole);
-                    if (id_pionka == -1)
+                    if (id_pionka == -1) // gdy wyszukane pole jest puste
                     {
                         liczba_ruchow_w_lewo_gora_damki++;
+                        pola_gdzie_damka_moze_sie_ruszyc[(rlg + 8)] = szukane_pole;
                         rlg = 8;
                     }
                     else
@@ -334,6 +343,7 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
                     if (id_pionka == -1)
                     {
                         liczba_ruchow_w_lewo_gora_damki++;
+                        pola_gdzie_damka_moze_sie_ruszyc[(rlg + 8)] = szukane_pole;
                     }
                     else
                     {
@@ -361,6 +371,7 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
                     if (id_pionka == -1)
                     {
                         liczba_ruchow_w_prawo_dol_damki++;
+                        pola_gdzie_damka_moze_sie_ruszyc[(rpd + 16)] = szukane_pole;
                         rpd = 8;
                     }
                     else
@@ -376,6 +387,7 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
                     if (id_pionka == -1)
                     {
                         liczba_ruchow_w_prawo_dol_damki++;
+                        pola_gdzie_damka_moze_sie_ruszyc[(rpd + 16)] = szukane_pole;
                         // cout << "      moziwy ruch na pole " << szukane_pole << "\n\n";
                     }
                     else
@@ -404,6 +416,7 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
                     if (id_pionka == -1)
                     {
                         liczba_ruchow_w_lewo_dol_damki++;
+                        pola_gdzie_damka_moze_sie_ruszyc[(rld + 24)] = szukane_pole;
                         rld = 8;
                     }
                     else
@@ -419,6 +432,7 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
                     if (id_pionka == -1)
                     {
                         liczba_ruchow_w_lewo_dol_damki++;
+                        pola_gdzie_damka_moze_sie_ruszyc[(rld + 24)] = szukane_pole;
                         // cout << "      moziwy ruch na pole " << szukane_pole << "\n\n";
                     }
                     else
@@ -431,7 +445,11 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
         }
         cout << "                         Wybrana damka moze wykonac " << liczba_ruchow_w_lewo_dol_damki << " ruchow w lewo dol   -- ta czynnosc jeszcze nie uwzglednia bicia!\n\n";
 
-    } ///////////////////////////////////////////////////////////////////////////////// DAMKI
+        //
+        //   DODAC ZMIANE FLAGI mozliwy_ruch
+        //
+
+    } ///////////////////////////////////////////////////////////////////////////////// DAMKI SPRAWDZANIE RUCHU
 
     if (ruch_w_prawo_gora == true)
     {
@@ -454,9 +472,10 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
     }
 
     if (ruch_w_prawo_gora == true || ruch_w_lewo_gora == true || ruch_w_prawo_dol == true || ruch_w_lewo_dol == true)
-    {
         mozliwy_ruch = true;
-    }
+
+    if (liczba_ruchow_w_lewo_dol_damki > 0 || liczba_ruchow_w_prawo_dol_damki > 0 || liczba_ruchow_w_lewo_gora_damki > 0 || liczba_ruchow_w_prawo_gora_damki > 0)
+        mozliwy_ruch = true;
 
     if (mozliwy_ruch == true)
     {
@@ -469,21 +488,12 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
 
             numer_pola_do_ruchu = sprawdz_numer_pola(nazwa_pola_f2);
 
+            if ((numer_pola_do_ruchu == 0))
+                goto podano_zle_pole_do_ruchu;
+
+            for (int i = 0; i < 24; i++)
             {
-                bool znaleziono_poprawne_pole = false;
-                for (int i = 0; i < 32; i++)
-                {
-                    if (numer_pola_do_ruchu == wybrane_pole[i].pole)
-                        znaleziono_poprawne_pole = true;
-                }
-
-                for (int i = 0; i < 24; i++)
-                {
-                    if (numer_pola_do_ruchu == pionek[i].pole)
-                        znaleziono_poprawne_pole = false;
-                }
-
-                if ((znaleziono_poprawne_pole == false) || (numer_pola_do_ruchu == pionek[indeks_pionka].pole))
+                if (numer_pola_do_ruchu == pionek[i].pole)
                     goto podano_zle_pole_do_ruchu;
             }
 
@@ -496,16 +506,31 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
                     aktualizuj_plansze();
                 }
                 else // nie wykonano ruchu
-                {
                     goto podano_zle_pole_do_ruchu;
+            }
+
+            ///////////////////////////////////////////////////////////////////////////////// DAMKI RUCH
+
+            if (pionek[indeks_pionka].typ == "damka")
+            {
+                for (int i = 0; i < 32; i++)
+                {
+                    if (numer_pola_do_ruchu == pola_gdzie_damka_moze_sie_ruszyc[i])
+                    {
+                        cout << "Ruch damki\n";
+                        pionek[indeks_pionka].pole = pola_gdzie_damka_moze_sie_ruszyc[i];
+                        aktualizuj_plansze();
+                    }
                 }
             }
+
+            ///////////////////////////////////////////////////////////////////////////////// DAMKI RUCH
         }
     }
-    else
-    {
-        return;
-    }
+    // else
+    // {
+    //     return;        //                       //        //         ???
+    // }
 
     cout << endl;
 }
