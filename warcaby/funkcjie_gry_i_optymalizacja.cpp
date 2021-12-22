@@ -45,6 +45,9 @@ bool mozliwy_ruch = false;
 bool ruch_w_prawo_gora = true, ruch_w_lewo_gora = true, ruch_w_prawo_dol = true, ruch_w_lewo_dol = true;
 int ile_mozliwych_ruchow_bialych = 0, ile_mozliwych_ruchow_czarnych = 0;
 
+int *pola_gdzie_damka_moze_sie_ruszyc;
+int liczba_ruchow_w_prawo_gora_damki = 0, liczba_ruchow_w_lewo_gora_damki = 0, liczba_ruchow_w_prawo_dol_damki = 0, liczba_ruchow_w_lewo_dol_damki = 0;
+
 //
 // biale pioneki: \2, damki: \3
 //
@@ -377,23 +380,240 @@ void sprawdz_mozliwy_ruch_pionka_czarnego_funkcja(int pole_pionka)
 //
 //
 
-void ruch_pionka(int pole_pionka, int indeks_pionka)
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void sprawdz_mozliwe_ruchy_damki(int indeks_pionka)
 {
+    liczba_ruchow_w_prawo_gora_damki = 0;
+    liczba_ruchow_w_lewo_gora_damki = 0;
+    liczba_ruchow_w_prawo_dol_damki = 0;
+    liczba_ruchow_w_lewo_dol_damki = 0;
 
-    ruch_w_prawo_gora = true; // przy wywolaniu funkcji te parametry musza sie resetowac
-    ruch_w_lewo_gora = true;
-    ruch_w_prawo_dol = true;
-    ruch_w_lewo_dol = true;
-
-    int liczba_ruchow_w_prawo_gora_damki = 0, liczba_ruchow_w_lewo_gora_damki = 0, liczba_ruchow_w_prawo_dol_damki = 0, liczba_ruchow_w_lewo_dol_damki = 0;
-
-    int *pola_gdzie_damka_moze_sie_ruszyc = new int[32];
-    // int pola_gdzie_damka_moze_sie_ruszyc[32];
+    pola_gdzie_damka_moze_sie_ruszyc = new int[32]; // ta tablica nie usuwa sie wraz z koncem tej funkcji
 
     for (int i = 0; i < 32; i++)
     {
         pola_gdzie_damka_moze_sie_ruszyc[i] = 0; // wyczyszczenie komorek pamieci
     }
+
+    int id_pionka = -1;
+    int szukane_pole = 0;
+
+    // ruch w prawo gora
+    for (int rpg = 0; rpg < 7; rpg++) // maksymalna liczba ruchow damki po jednej przekatenej PRAWO GORA (DAMKA)
+    {
+        if (pionek[indeks_pionka].pole == 88 || pionek[indeks_pionka].pole == 68 || pionek[indeks_pionka].pole == 48 || pionek[indeks_pionka].pole == 28 || pionek[indeks_pionka].pole == 86 || pionek[indeks_pionka].pole == 84 || pionek[indeks_pionka].pole == 82)
+        {
+            rpg = 8;
+        }
+        else
+        {
+            szukane_pole = ((rpg * 11) + (pionek[indeks_pionka].pole + 11));
+            if (szukane_pole == 88 || szukane_pole == 86 || szukane_pole == 84 || szukane_pole == 82 || szukane_pole == 68 || szukane_pole == 48 || szukane_pole == 28)
+            {
+                id_pionka = sprawdz_indeks_pionka(szukane_pole);
+                if (id_pionka == -1)
+                {
+                    liczba_ruchow_w_prawo_gora_damki++;
+                    pola_gdzie_damka_moze_sie_ruszyc[rpg] = szukane_pole;
+                    rpg = 8;
+                }
+                else
+                {
+                    rpg = 8;
+                    // cout << "\n                 koniec ruchow damki na polu " << pionek[id_pionka].pole << "    rzekoma przeszkoda jako pionek na tym polu " << id_pionka << "\n\n";
+                }
+            }
+            else
+            {
+                // cout << "     szukane_pole wynosi: " << szukane_pole << endl;
+                id_pionka = sprawdz_indeks_pionka(szukane_pole);
+                if (id_pionka == -1)
+                {
+                    liczba_ruchow_w_prawo_gora_damki++;
+                    pola_gdzie_damka_moze_sie_ruszyc[rpg] = szukane_pole;
+                    // cout << "      moziwy ruch na pole " << szukane_pole << "\n\n";
+                }
+                else
+                {
+                    rpg = 8;
+                    // cout << "\n                 koniec ruchow damki na polu " << pionek[id_pionka].pole << "    rzekoma przeszkoda jako pionek na tym polu " << id_pionka << "\n\n";
+                }
+            }
+        }
+    }
+    cout << "                         Wybrana damka moze wykonac " << liczba_ruchow_w_prawo_gora_damki << " ruchow w prawo gora   -- ta czynnosc jeszcze nie uwzglednia bicia!\n";
+
+    // ruch w lewo gora
+    for (int rlg = 0; rlg < 7; rlg++) // maksymalna liczba ruchow damki po jednej przekatenej LEWO GORA (DAMKA)
+    {
+        if (pionek[indeks_pionka].pole == 71 || pionek[indeks_pionka].pole == 51 || pionek[indeks_pionka].pole == 31 || pionek[indeks_pionka].pole == 11 || pionek[indeks_pionka].pole == 88 || pionek[indeks_pionka].pole == 86 || pionek[indeks_pionka].pole == 84 || pionek[indeks_pionka].pole == 82)
+        {
+            rlg = 8;
+        }
+        else
+        {
+            szukane_pole = ((rlg * 9) + (pionek[indeks_pionka].pole + 9));
+            if (szukane_pole == 86 || szukane_pole == 84 || szukane_pole == 82 || szukane_pole == 71 || szukane_pole == 51 || szukane_pole == 31)
+            {
+                id_pionka = sprawdz_indeks_pionka(szukane_pole);
+                if (id_pionka == -1) // gdy wyszukane pole jest puste
+                {
+                    liczba_ruchow_w_lewo_gora_damki++;
+                    pola_gdzie_damka_moze_sie_ruszyc[(rlg + 8)] = szukane_pole;
+                    rlg = 8;
+                }
+                else
+                {
+                    rlg = 8;
+                    // cout << "\n                 koniec ruchow damki na polu " << pionek[id_pionka].pole << "    rzekoma przeszkoda jako pionek na tym polu " << id_pionka << "\n\n";
+                }
+            }
+            else
+            {
+                id_pionka = sprawdz_indeks_pionka(szukane_pole);
+                if (id_pionka == -1)
+                {
+                    liczba_ruchow_w_lewo_gora_damki++;
+                    pola_gdzie_damka_moze_sie_ruszyc[(rlg + 8)] = szukane_pole;
+                }
+                else
+                {
+                    rlg = 8;
+                    // cout << "\n                 koniec ruchow damki na polu " << pionek[id_pionka].pole << "    rzekoma przeszkoda jako pionek na tym polu " << id_pionka << "\n\n";
+                }
+            }
+        }
+    }
+    cout << "                         Wybrana damka moze wykonac " << liczba_ruchow_w_lewo_gora_damki << " ruchow w lewo gora   -- ta czynnosc jeszcze nie uwzglednia bicia!\n";
+
+    // ruch w prawy dol
+    for (int rpd = 0; rpd < 7; rpd++) // maksymalna liczba ruchow damki po jednej przekatenej PRAWO DOL (DAMKA)
+    {
+        if (pionek[indeks_pionka].pole == 88 || pionek[indeks_pionka].pole == 68 || pionek[indeks_pionka].pole == 48 || pionek[indeks_pionka].pole == 28 || pionek[indeks_pionka].pole == 11 || pionek[indeks_pionka].pole == 13 || pionek[indeks_pionka].pole == 15 || pionek[indeks_pionka].pole == 17)
+        {
+            rpd = 8;
+        }
+        else
+        {
+            szukane_pole = ((pionek[indeks_pionka].pole - 9) - (rpd * 9));
+            if (szukane_pole == 68 || szukane_pole == 48 || szukane_pole == 28 || szukane_pole == 11 || szukane_pole == 13 || szukane_pole == 15 || szukane_pole == 17)
+            {
+                id_pionka = sprawdz_indeks_pionka(szukane_pole);
+                if (id_pionka == -1)
+                {
+                    liczba_ruchow_w_prawo_dol_damki++;
+                    pola_gdzie_damka_moze_sie_ruszyc[(rpd + 16)] = szukane_pole;
+                    rpd = 8;
+                }
+                else
+                {
+                    rpd = 8;
+                    // cout << "\n                 koniec ruchow damki na polu " << pionek[id_pionka].pole << "    rzekoma przeszkoda jako pionek na tym polu " << id_pionka << "\n\n";
+                }
+            }
+            else
+            {
+                // cout << "     szukane_pole wynosi: " << szukane_pole << endl;
+                id_pionka = sprawdz_indeks_pionka(szukane_pole);
+                if (id_pionka == -1)
+                {
+                    liczba_ruchow_w_prawo_dol_damki++;
+                    pola_gdzie_damka_moze_sie_ruszyc[(rpd + 16)] = szukane_pole;
+                    // cout << "      moziwy ruch na pole " << szukane_pole << "\n\n";
+                }
+                else
+                {
+                    rpd = 8; // konczy petle liczenia ruchow
+                    // cout << "\n                 koniec ruchow damki na polu " << pionek[id_pionka].pole << "    rzekoma przeszkoda jako pionek na tym polu " << id_pionka << "\n\n";
+                }
+            }
+        }
+    }
+    cout << "                         Wybrana damka moze wykonac " << liczba_ruchow_w_prawo_dol_damki << " ruchow w prawo dol   -- ta czynnosc jeszcze nie uwzglednia bicia!\n";
+
+    // ruch w lewy dol
+    for (int rld = 0; rld < 7; rld++) // maksymalna liczba ruchow damki po jednej przekatenej LEWO DOL (DAMKA)
+    {
+        if (pionek[indeks_pionka].pole == 71 || pionek[indeks_pionka].pole == 51 || pionek[indeks_pionka].pole == 31 || pionek[indeks_pionka].pole == 11 || pionek[indeks_pionka].pole == 13 || pionek[indeks_pionka].pole == 15 || pionek[indeks_pionka].pole == 17)
+        {
+            rld = 8;
+        }
+        else
+        {
+            szukane_pole = ((pionek[indeks_pionka].pole - 11) - (rld * 11));
+            if (szukane_pole == 71 || szukane_pole == 51 || szukane_pole == 31 || szukane_pole == 11 || szukane_pole == 13 || szukane_pole == 15 || szukane_pole == 17)
+            {
+                id_pionka = sprawdz_indeks_pionka(szukane_pole);
+                if (id_pionka == -1)
+                {
+                    liczba_ruchow_w_lewo_dol_damki++;
+                    pola_gdzie_damka_moze_sie_ruszyc[(rld + 24)] = szukane_pole;
+                    rld = 8;
+                }
+                else
+                {
+                    rld = 8;
+                    // cout << "\n                 koniec ruchow damki na polu " << pionek[id_pionka].pole << "    rzekoma przeszkoda jako pionek na tym polu " << id_pionka << "\n\n";
+                }
+            }
+            else
+            {
+                // cout << "     szukane_pole wynosi: " << szukane_pole << endl;
+                id_pionka = sprawdz_indeks_pionka(szukane_pole);
+                if (id_pionka == -1)
+                {
+                    liczba_ruchow_w_lewo_dol_damki++;
+                    pola_gdzie_damka_moze_sie_ruszyc[(rld + 24)] = szukane_pole;
+                    // cout << "      moziwy ruch na pole " << szukane_pole << "\n\n";
+                }
+                else
+                {
+                    rld = 8;
+                    // cout << "\n                 koniec ruchow damki na polu " << pionek[id_pionka].pole << "    rzekoma przeszkoda jako pionek na tym polu " << id_pionka << "\n\n";
+                }
+            }
+        }
+    }
+    cout << "                         Wybrana damka moze wykonac " << liczba_ruchow_w_lewo_dol_damki << " ruchow w lewo dol   -- ta czynnosc jeszcze nie uwzglednia bicia!\n\n";
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+void ruch_pionka(int pole_pionka, int indeks_pionka)
+{
+    if (pionek[indeks_pionka].typ == "pionek")
+    {
+        ruch_w_prawo_gora = true; // przy wywolaniu funkcji te parametry musza sie resetowac
+        ruch_w_lewo_gora = true;
+        ruch_w_prawo_dol = true;
+        ruch_w_lewo_dol = true;
+    }
+    else if (pionek[indeks_pionka].typ == "damka")
+    {
+        ruch_w_prawo_gora = false;
+        ruch_w_prawo_dol = false;
+        ruch_w_lewo_gora = false;
+        ruch_w_lewo_dol = false;
+    }
+
+    liczba_ruchow_w_prawo_gora_damki = 0;
+    liczba_ruchow_w_lewo_gora_damki = 0;
+    liczba_ruchow_w_prawo_dol_damki = 0;
+    liczba_ruchow_w_lewo_dol_damki = 0;
 
     string nazwa_pola_f2;
     int numer_pola_do_ruchu = 0;
@@ -405,211 +625,13 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
     else if (pionek[indeks_pionka].kolor == "czarny" && pionek[indeks_pionka].typ == "pionek")
         sprawdz_mozliwy_ruch_pionka_czarnego_funkcja(pole_pionka);
 
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
     // działa i nie chce mi się tego zmieniać
     //  ||
     //  ||
     //  \/
 
-    else if (pionek[indeks_pionka].typ == "damka") //////////////////////////////////////////////////////////////// DAMKI SPRAWDZANIE RUCHU
-    {
-        cout << "\nDAMKA\n";
-        ruch_w_prawo_gora = false;
-        ruch_w_prawo_dol = false;
-        ruch_w_lewo_gora = false; // te sa do zwyklych pionkow
-        ruch_w_lewo_dol = false;
-
-        int id_pionka = -1;
-        int szukane_pole = 0;
-
-        // ruch w prawo gora
-        for (int rpg = 0; rpg < 7; rpg++) // maksymalna liczba ruchow damki po jednej przekatenej PRAWO GORA (DAMKA)
-        {
-            if (pionek[indeks_pionka].pole == 88 || pionek[indeks_pionka].pole == 68 || pionek[indeks_pionka].pole == 48 || pionek[indeks_pionka].pole == 28 || pionek[indeks_pionka].pole == 86 || pionek[indeks_pionka].pole == 84 || pionek[indeks_pionka].pole == 82)
-            {
-                rpg = 8;
-            }
-            else
-            {
-                szukane_pole = ((rpg * 11) + (pionek[indeks_pionka].pole + 11));
-                if (szukane_pole == 88 || szukane_pole == 86 || szukane_pole == 84 || szukane_pole == 82 || szukane_pole == 68 || szukane_pole == 48 || szukane_pole == 28)
-                {
-                    id_pionka = sprawdz_indeks_pionka(szukane_pole);
-                    if (id_pionka == -1)
-                    {
-                        liczba_ruchow_w_prawo_gora_damki++;
-                        pola_gdzie_damka_moze_sie_ruszyc[rpg] = szukane_pole;
-                        rpg = 8;
-                    }
-                    else
-                    {
-                        rpg = 8;
-                        // cout << "\n                 koniec ruchow damki na polu " << pionek[id_pionka].pole << "    rzekoma przeszkoda jako pionek na tym polu " << id_pionka << "\n\n";
-                    }
-                }
-                else
-                {
-                    // cout << "     szukane_pole wynosi: " << szukane_pole << endl;
-                    id_pionka = sprawdz_indeks_pionka(szukane_pole);
-                    if (id_pionka == -1)
-                    {
-                        liczba_ruchow_w_prawo_gora_damki++;
-                        pola_gdzie_damka_moze_sie_ruszyc[rpg] = szukane_pole;
-                        // cout << "      moziwy ruch na pole " << szukane_pole << "\n\n";
-                    }
-                    else
-                    {
-                        rpg = 8;
-                        // cout << "\n                 koniec ruchow damki na polu " << pionek[id_pionka].pole << "    rzekoma przeszkoda jako pionek na tym polu " << id_pionka << "\n\n";
-                    }
-                }
-            }
-        }
-        cout << "                         Wybrana damka moze wykonac " << liczba_ruchow_w_prawo_gora_damki << " ruchow w prawo gora   -- ta czynnosc jeszcze nie uwzglednia bicia!\n";
-
-        // ruch w lewo gora
-        for (int rlg = 0; rlg < 7; rlg++) // maksymalna liczba ruchow damki po jednej przekatenej LEWO GORA (DAMKA)
-        {
-            if (pionek[indeks_pionka].pole == 71 || pionek[indeks_pionka].pole == 51 || pionek[indeks_pionka].pole == 31 || pionek[indeks_pionka].pole == 11 || pionek[indeks_pionka].pole == 88 || pionek[indeks_pionka].pole == 86 || pionek[indeks_pionka].pole == 84 || pionek[indeks_pionka].pole == 82)
-            {
-                rlg = 8;
-            }
-            else
-            {
-                szukane_pole = ((rlg * 9) + (pionek[indeks_pionka].pole + 9));
-                if (szukane_pole == 86 || szukane_pole == 84 || szukane_pole == 82 || szukane_pole == 71 || szukane_pole == 51 || szukane_pole == 31)
-                {
-                    id_pionka = sprawdz_indeks_pionka(szukane_pole);
-                    if (id_pionka == -1) // gdy wyszukane pole jest puste
-                    {
-                        liczba_ruchow_w_lewo_gora_damki++;
-                        pola_gdzie_damka_moze_sie_ruszyc[(rlg + 8)] = szukane_pole;
-                        rlg = 8;
-                    }
-                    else
-                    {
-                        rlg = 8;
-                        // cout << "\n                 koniec ruchow damki na polu " << pionek[id_pionka].pole << "    rzekoma przeszkoda jako pionek na tym polu " << id_pionka << "\n\n";
-                    }
-                }
-                else
-                {
-                    id_pionka = sprawdz_indeks_pionka(szukane_pole);
-                    if (id_pionka == -1)
-                    {
-                        liczba_ruchow_w_lewo_gora_damki++;
-                        pola_gdzie_damka_moze_sie_ruszyc[(rlg + 8)] = szukane_pole;
-                    }
-                    else
-                    {
-                        rlg = 8;
-                        // cout << "\n                 koniec ruchow damki na polu " << pionek[id_pionka].pole << "    rzekoma przeszkoda jako pionek na tym polu " << id_pionka << "\n\n";
-                    }
-                }
-            }
-        }
-        cout << "                         Wybrana damka moze wykonac " << liczba_ruchow_w_lewo_gora_damki << " ruchow w lewo gora   -- ta czynnosc jeszcze nie uwzglednia bicia!\n";
-
-        // ruch w prawy dol
-        for (int rpd = 0; rpd < 7; rpd++) // maksymalna liczba ruchow damki po jednej przekatenej PRAWO DOL (DAMKA)
-        {
-            if (pionek[indeks_pionka].pole == 88 || pionek[indeks_pionka].pole == 68 || pionek[indeks_pionka].pole == 48 || pionek[indeks_pionka].pole == 28 || pionek[indeks_pionka].pole == 11 || pionek[indeks_pionka].pole == 13 || pionek[indeks_pionka].pole == 15 || pionek[indeks_pionka].pole == 17)
-            {
-                rpd = 8;
-            }
-            else
-            {
-                szukane_pole = ((pionek[indeks_pionka].pole - 9) - (rpd * 9));
-                if (szukane_pole == 68 || szukane_pole == 48 || szukane_pole == 28 || szukane_pole == 11 || szukane_pole == 13 || szukane_pole == 15 || szukane_pole == 17)
-                {
-                    id_pionka = sprawdz_indeks_pionka(szukane_pole);
-                    if (id_pionka == -1)
-                    {
-                        liczba_ruchow_w_prawo_dol_damki++;
-                        pola_gdzie_damka_moze_sie_ruszyc[(rpd + 16)] = szukane_pole;
-                        rpd = 8;
-                    }
-                    else
-                    {
-                        rpd = 8;
-                        // cout << "\n                 koniec ruchow damki na polu " << pionek[id_pionka].pole << "    rzekoma przeszkoda jako pionek na tym polu " << id_pionka << "\n\n";
-                    }
-                }
-                else
-                {
-                    // cout << "     szukane_pole wynosi: " << szukane_pole << endl;
-                    id_pionka = sprawdz_indeks_pionka(szukane_pole);
-                    if (id_pionka == -1)
-                    {
-                        liczba_ruchow_w_prawo_dol_damki++;
-                        pola_gdzie_damka_moze_sie_ruszyc[(rpd + 16)] = szukane_pole;
-                        // cout << "      moziwy ruch na pole " << szukane_pole << "\n\n";
-                    }
-                    else
-                    {
-                        rpd = 8; // konczy petle liczenia ruchow
-                        // cout << "\n                 koniec ruchow damki na polu " << pionek[id_pionka].pole << "    rzekoma przeszkoda jako pionek na tym polu " << id_pionka << "\n\n";
-                    }
-                }
-            }
-        }
-        cout << "                         Wybrana damka moze wykonac " << liczba_ruchow_w_prawo_dol_damki << " ruchow w prawo dol   -- ta czynnosc jeszcze nie uwzglednia bicia!\n";
-
-        // ruch w lewy dol
-        for (int rld = 0; rld < 7; rld++) // maksymalna liczba ruchow damki po jednej przekatenej LEWO DOL (DAMKA)
-        {
-            if (pionek[indeks_pionka].pole == 71 || pionek[indeks_pionka].pole == 51 || pionek[indeks_pionka].pole == 31 || pionek[indeks_pionka].pole == 11 || pionek[indeks_pionka].pole == 13 || pionek[indeks_pionka].pole == 15 || pionek[indeks_pionka].pole == 17)
-            {
-                rld = 8;
-            }
-            else
-            {
-                szukane_pole = ((pionek[indeks_pionka].pole - 11) - (rld * 11));
-                if (szukane_pole == 71 || szukane_pole == 51 || szukane_pole == 31 || szukane_pole == 11 || szukane_pole == 13 || szukane_pole == 15 || szukane_pole == 17)
-                {
-                    id_pionka = sprawdz_indeks_pionka(szukane_pole);
-                    if (id_pionka == -1)
-                    {
-                        liczba_ruchow_w_lewo_dol_damki++;
-                        pola_gdzie_damka_moze_sie_ruszyc[(rld + 24)] = szukane_pole;
-                        rld = 8;
-                    }
-                    else
-                    {
-                        rld = 8;
-                        // cout << "\n                 koniec ruchow damki na polu " << pionek[id_pionka].pole << "    rzekoma przeszkoda jako pionek na tym polu " << id_pionka << "\n\n";
-                    }
-                }
-                else
-                {
-                    // cout << "     szukane_pole wynosi: " << szukane_pole << endl;
-                    id_pionka = sprawdz_indeks_pionka(szukane_pole);
-                    if (id_pionka == -1)
-                    {
-                        liczba_ruchow_w_lewo_dol_damki++;
-                        pola_gdzie_damka_moze_sie_ruszyc[(rld + 24)] = szukane_pole;
-                        // cout << "      moziwy ruch na pole " << szukane_pole << "\n\n";
-                    }
-                    else
-                    {
-                        rld = 8;
-                        // cout << "\n                 koniec ruchow damki na polu " << pionek[id_pionka].pole << "    rzekoma przeszkoda jako pionek na tym polu " << id_pionka << "\n\n";
-                    }
-                }
-            }
-        }
-        cout << "                         Wybrana damka moze wykonac " << liczba_ruchow_w_lewo_dol_damki << " ruchow w lewo dol   -- ta czynnosc jeszcze nie uwzglednia bicia!\n\n";
-
-    } ///////////////////////////////////////////////////////////////////////////////// DAMKI SPRAWDZANIE RUCHU
+    else if (pionek[indeks_pionka].typ == "damka") // DAMKI SPRAWDZANIE RUCHU
+        sprawdz_mozliwe_ruchy_damki(indeks_pionka);
 
     //
     //
@@ -813,26 +835,62 @@ void ile_mozliwych_ruchow_pionkow_funkcja(int indeks_pionka)
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
-void sprawdz_czy_jest_mozliwy_ruch() // dziala dla pionkow
+void sprawdz_czy_jest_mozliwy_ruch()
 {
     bool mozliwy_ruch_bialych = true, mozliwy_ruch_czarnych = true;
     ile_mozliwych_ruchow_bialych = 0;
     ile_mozliwych_ruchow_czarnych = 0;
 
+    // int lista_indeksow_p_i_d_ktore_moga_wykonac_ruch[24];
+    int *lista_indeksow_p_i_d_ktore_moga_wykonac_ruch = new int[24];
+
     for (int i = 0; i < 24; i++)
     {
-        if (pionek[i].typ == "pionek")
-            ile_mozliwych_ruchow_pionkow_funkcja(i);
+        lista_indeksow_p_i_d_ktore_moga_wykonac_ruch[i] = 0;
+    }
+
+    for (int i = 0; i < 24; i++) // sprawdza mozliwe ruchy pionkow
+    {
+        if (pionek[i].pole != 0) // odrzuca to zbite pionki. Pole zbitych pionkow bedzie ustawiane na 0
+        {
+            if (pionek[i].typ == "pionek")
+            {
+                ile_mozliwych_ruchow_pionkow_funkcja(i);
+
+                if (ruch_w_prawo_gora == true || ruch_w_lewo_gora == true || ruch_w_prawo_dol == true || ruch_w_lewo_dol == true)
+                    lista_indeksow_p_i_d_ktore_moga_wykonac_ruch[i] = i;
+            }
+            else if (pionek[i].typ == "damka") // sprawdza mozliwe ruchy damek
+            {
+                if (pionek[i].kolor == "bialy")
+                {
+                    sprawdz_mozliwe_ruchy_damki(i);
+
+                    for (int k = 0; k < 32; k++)
+                    {
+                        if (pola_gdzie_damka_moze_sie_ruszyc[k] != 0)
+                        {
+                            ile_mozliwych_ruchow_bialych++;
+                            lista_indeksow_p_i_d_ktore_moga_wykonac_ruch[i] = i;
+                        }
+                    }
+                }
+                else if (pionek[i].kolor == "czarny")
+                {
+                    sprawdz_mozliwe_ruchy_damki(i);
+
+                    for (int k = 0; k < 32; k++)
+                    {
+                        if (pola_gdzie_damka_moze_sie_ruszyc[k] != 0)
+                        {
+                            ile_mozliwych_ruchow_czarnych++;
+                            lista_indeksow_p_i_d_ktore_moga_wykonac_ruch[i] = i;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     if (ile_mozliwych_ruchow_bialych == 0)
@@ -842,6 +900,16 @@ void sprawdz_czy_jest_mozliwy_ruch() // dziala dla pionkow
 
     cout << "\n   1/0 biale --> " << mozliwy_ruch_bialych << "    1/0 czarne --> " << mozliwy_ruch_czarnych;
     cout << "\n   ile biale --> " << ile_mozliwych_ruchow_bialych << "    ile czarne --> " << ile_mozliwych_ruchow_czarnych << "\n\n";
+
+    cout << "indeksy pionkow i damek, ktore moga wykonac ruch:\n";
+    for (int i = 0; i < 24; i++)
+    {
+        if (lista_indeksow_p_i_d_ktore_moga_wykonac_ruch[i] != 0)
+            cout << "   " << lista_indeksow_p_i_d_ktore_moga_wykonac_ruch[i] << "\n";
+    }
+
+    delete[] lista_indeksow_p_i_d_ktore_moga_wykonac_ruch;
+    delete[] pola_gdzie_damka_moze_sie_ruszyc;
 }
 
 //
