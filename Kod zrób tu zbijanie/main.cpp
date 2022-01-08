@@ -850,15 +850,16 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
     if (zbijanie_prawo_gora == true || zbijanie_lewo_gora == true || zbijanie_prawo_dol == true || zbijanie_lewo_dol == true)
         mozliwe_bicie = true;
 
-    if (mozliwe_bicie ==true)
-    {
-        mozliwy_ruch = false;
-    }
 
     // dla damek
     if (liczba_ruchow_w_lewo_dol_damki > 0 || liczba_ruchow_w_prawo_dol_damki > 0 || liczba_ruchow_w_lewo_gora_damki > 0 || liczba_ruchow_w_prawo_gora_damki > 0)
         mozliwy_ruch = true;
 
+
+    if (mozliwe_bicie ==true)
+    {
+        mozliwy_ruch = false;
+    }
     //
     //
     //
@@ -874,7 +875,7 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
     //
     //
 
-    if (mozliwy_ruch == true)
+    if (mozliwy_ruch == true || mozliwe_bicie ==true)
     {
     podano_zle_pole_do_ruchu:
         cout << "\nPodaj pole na planszy gdzie chesz ruszyc wybranego pionka: ";
@@ -1274,7 +1275,7 @@ int main()
                     goto powtorka_ruchu;
                 }
                 mozliwy_ruch = false;
-                mozliwe_bicie == false;
+                mozliwe_bicie = false;
             }
         }
         else if (wybor == "reset" || wybor == "2")
