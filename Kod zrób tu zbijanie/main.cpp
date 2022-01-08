@@ -856,10 +856,10 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
         mozliwy_ruch = true;
 
 
-    if (mozliwe_bicie ==true)
-    {
-        mozliwy_ruch = false;
-    }
+    //if (mozliwe_bicie ==true)
+    //{
+    //    mozliwy_ruch = false;
+    //}
     //
     //
     //
@@ -906,7 +906,6 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
                 //ZMIANY!!!! zbijanie
                 else if ((((pionek[indeks_pionka].pole + 22) == numer_pola_do_ruchu) && (zbijanie_prawo_gora == true)) || (((pionek[indeks_pionka].pole + 18) == numer_pola_do_ruchu) && (zbijanie_lewo_gora == true)) || (((pionek[indeks_pionka].pole - 18) == numer_pola_do_ruchu) && (zbijanie_prawo_dol == true)) || (((pionek[indeks_pionka].pole - 22) == numer_pola_do_ruchu) && (zbijanie_lewo_dol ==true)))
                 {
-                    pionek[indeks_pionka].pole = numer_pola_do_ruchu;
 
                     //ustawienie pola pionka zbijanego na 0
 
@@ -926,6 +925,8 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
                     {
                         pionek[sprawdz_indeks_pionka((pole_pionka-11))].pole = 0;
                     }
+
+                    pionek[indeks_pionka].pole = numer_pola_do_ruchu;
 
                     aktualizuj_plansze();
 
