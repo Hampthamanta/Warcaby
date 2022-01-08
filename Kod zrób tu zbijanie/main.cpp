@@ -49,15 +49,17 @@ bool ruch_w_prawo_gora = true, ruch_w_lewo_gora = true, ruch_w_prawo_dol = true,
 bool zbijanie_prawo_gora = true, zbijanie_lewo_gora = true, zbijanie_prawo_dol = true, zbijanie_lewo_dol = true;
 
 //ZMIANY
-         bool istnienie_zbijanego_pionka_pg = false;
-         bool istnienie_zbijanego_pionka_lg = false;
-         bool istnienie_zbijanego_pionka_pd = false;
-         bool istnienie_zbijanego_pionka_ld = false;
+bool istnienie_zbijanego_pionka_pg = false;
+bool istnienie_zbijanego_pionka_lg = false;
+bool istnienie_zbijanego_pionka_pd = false;
+bool istnienie_zbijanego_pionka_ld = false;
 
 int ile_mozliwych_ruchow_bialych = 0, ile_mozliwych_ruchow_czarnych = 0;
 
 int *pola_gdzie_damka_moze_sie_ruszyc;
 int liczba_ruchow_w_prawo_gora_damki = 0, liczba_ruchow_w_lewo_gora_damki = 0, liczba_ruchow_w_prawo_dol_damki = 0, liczba_ruchow_w_lewo_dol_damki = 0;
+
+int id_pionka_ktory_moze_zbic_damka_pg = -1, id_pionka_ktory_moze_zbic_damka_pd = -1, id_pionka_ktory_moze_zbic_damka_lg = -1, id_pionka_ktory_moze_zbic_damka_ld = -1;
 
 //
 // biale pioneki: \2, damki: \3
@@ -282,7 +284,6 @@ int sprawdz_numer_pola(string nazwa_pola_f) // funkcja sprawdzajaca podana nazwe
 //
 //
 
-
 int sprawdz_indeks_pionka(int nr_pola) // funkcja sprawdza czy na podanym polu znajduje sie pionek, jezeli tak to zwraca jego inkeds(id),
 {                                      //                                      jezeli nie ma tam pionka to zwraca 0
     int id_pola = -1;
@@ -299,15 +300,12 @@ int sprawdz_indeks_pionka(int nr_pola) // funkcja sprawdza czy na podanym polu z
     return id_pola;
 }
 
-
-
-
 //ZMIANY!!!
 //sprawdza jaki kolor jest na polu
 string sprawdz_kolor_pionka(int nr_pola)
 {
     string kolor;
-    for (int k = 0; k<24;k++)
+    for (int k = 0; k < 24; k++)
     {
         if (nr_pola == pionek[k].pole)
         {
@@ -412,67 +410,60 @@ void sprawdz_mozliwy_ruch_pionka_bialego_funkcja(int pole_pionka)
 void sprawdz_mozliwe_bicie_pionka_funkcja(int pole_pionka)
 {
     //sprawdzanie czy na polu na które chce się ruszyć jest pionek
-    for (int i=0; i<24;i++)
+    for (int i = 0; i < 24; i++)
     {
         if ((pole_pionka + 22) == pionek[i].pole)
-          zbijanie_prawo_gora = false;
+            zbijanie_prawo_gora = false;
 
         if ((pole_pionka + 18) == pionek[i].pole)
-          zbijanie_lewo_gora = false;
+            zbijanie_lewo_gora = false;
 
         if ((pole_pionka - 18) == pionek[i].pole)
-          zbijanie_prawo_dol = false;
+            zbijanie_prawo_dol = false;
 
         if ((pole_pionka - 22) == pionek[i].pole)
-          zbijanie_lewo_dol = false;
-
+            zbijanie_lewo_dol = false;
     }
-
 
     //sprawdzenie czy jest pionek na polu które chcemy zbić i jakiego jest koloru
 
-    for (int i=0; i<24; i++)
+    for (int i = 0; i < 24; i++)
     {
         if (((pole_pionka + 11) == pionek[i].pole) && (zbijanie_prawo_gora == true))
-         {
+        {
             istnienie_zbijanego_pionka_pg = true;
-            if (sprawdz_kolor_pionka((pole_pionka+11))==(pionek[sprawdz_indeks_pionka(pole_pionka)].kolor))
+            if (sprawdz_kolor_pionka((pole_pionka + 11)) == (pionek[sprawdz_indeks_pionka(pole_pionka)].kolor))
             {
                 zbijanie_prawo_gora = false;
             }
-         }
-
+        }
 
         if (((pole_pionka + 9) == pionek[i].pole) && (zbijanie_lewo_gora == true))
-         {
+        {
             istnienie_zbijanego_pionka_lg = true;
-            if (sprawdz_kolor_pionka((pole_pionka+9))==(pionek[sprawdz_indeks_pionka(pole_pionka)].kolor))
+            if (sprawdz_kolor_pionka((pole_pionka + 9)) == (pionek[sprawdz_indeks_pionka(pole_pionka)].kolor))
             {
                 zbijanie_lewo_gora = false;
             }
-         }
-
+        }
 
         if (((pole_pionka - 11) == pionek[i].pole) && (zbijanie_lewo_dol == true))
-         {
+        {
             istnienie_zbijanego_pionka_ld = true;
-            if (sprawdz_kolor_pionka((pole_pionka-11))==(pionek[sprawdz_indeks_pionka(pole_pionka)].kolor))
+            if (sprawdz_kolor_pionka((pole_pionka - 11)) == (pionek[sprawdz_indeks_pionka(pole_pionka)].kolor))
             {
                 zbijanie_lewo_dol = false;
             }
-         }
-
+        }
 
         if (((pole_pionka - 9) == pionek[i].pole) && (zbijanie_prawo_dol = true))
-         {
-           istnienie_zbijanego_pionka_pd = true;
-           if (sprawdz_kolor_pionka((pole_pionka-9))==(pionek[sprawdz_indeks_pionka(pole_pionka)].kolor))
-           {
-               zbijanie_prawo_dol = false;
-           }
-         }
-
-
+        {
+            istnienie_zbijanego_pionka_pd = true;
+            if (sprawdz_kolor_pionka((pole_pionka - 9)) == (pionek[sprawdz_indeks_pionka(pole_pionka)].kolor))
+            {
+                zbijanie_prawo_dol = false;
+            }
+        }
     }
 }
 
@@ -513,6 +504,11 @@ void sprawdz_mozliwe_ruchy_damki(int indeks_pionka)
     liczba_ruchow_w_lewo_gora_damki = 0;
     liczba_ruchow_w_prawo_dol_damki = 0;
     liczba_ruchow_w_lewo_dol_damki = 0;
+
+    id_pionka_ktory_moze_zbic_damka_pg = -1;
+    id_pionka_ktory_moze_zbic_damka_pd = -1;
+    id_pionka_ktory_moze_zbic_damka_lg = -1;
+    id_pionka_ktory_moze_zbic_damka_ld = -1;
 
     pola_gdzie_damka_moze_sie_ruszyc = new int[32]; // ta tablica nie usuwa sie wraz z koncem tej funkcji
 
@@ -559,9 +555,10 @@ void sprawdz_mozliwe_ruchy_damki(int indeks_pionka)
                     pola_gdzie_damka_moze_sie_ruszyc[rpg] = szukane_pole;
                     // cout << "      moziwy ruch na pole " << szukane_pole << "\n\n";
                 }
-                else
+                else // id_pionka != -1
                 {
                     rpg = 8;
+                    id_pionka_ktory_moze_zbic_damka_pg = id_pionka;
                     // cout << "\n                 koniec ruchow damki na polu " << pionek[id_pionka].pole << "    rzekoma przeszkoda jako pionek na tym polu " << id_pionka << "\n\n";
                 }
             }
@@ -605,6 +602,7 @@ void sprawdz_mozliwe_ruchy_damki(int indeks_pionka)
                 else
                 {
                     rlg = 8;
+                    id_pionka_ktory_moze_zbic_damka_lg = id_pionka;
                     // cout << "\n                 koniec ruchow damki na polu " << pionek[id_pionka].pole << "    rzekoma przeszkoda jako pionek na tym polu " << id_pionka << "\n\n";
                 }
             }
@@ -650,6 +648,7 @@ void sprawdz_mozliwe_ruchy_damki(int indeks_pionka)
                 else
                 {
                     rpd = 8; // konczy petle liczenia ruchow
+                    id_pionka_ktory_moze_zbic_damka_pd = id_pionka;
                     // cout << "\n                 koniec ruchow damki na polu " << pionek[id_pionka].pole << "    rzekoma przeszkoda jako pionek na tym polu " << id_pionka << "\n\n";
                 }
             }
@@ -695,6 +694,7 @@ void sprawdz_mozliwe_ruchy_damki(int indeks_pionka)
                 else
                 {
                     rld = 8;
+                    id_pionka_ktory_moze_zbic_damka_ld = id_pionka;
                     // cout << "\n                 koniec ruchow damki na polu " << pionek[id_pionka].pole << "    rzekoma przeszkoda jako pionek na tym polu " << id_pionka << "\n\n";
                 }
             }
@@ -760,15 +760,15 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
 
     if (pionek[indeks_pionka].kolor == "bialy" && pionek[indeks_pionka].typ == "pionek")
     {
-       sprawdz_mozliwy_ruch_pionka_bialego_funkcja(pole_pionka);
-       sprawdz_mozliwe_bicie_pionka_funkcja(pole_pionka);
+        sprawdz_mozliwy_ruch_pionka_bialego_funkcja(pole_pionka);
+        sprawdz_mozliwe_bicie_pionka_funkcja(pole_pionka);
     }
 
     else if (pionek[indeks_pionka].kolor == "czarny" && pionek[indeks_pionka].typ == "pionek")
-        {
-            sprawdz_mozliwy_ruch_pionka_czarnego_funkcja(pole_pionka);
-            sprawdz_mozliwe_bicie_pionka_funkcja(pole_pionka);
-        }
+    {
+        sprawdz_mozliwy_ruch_pionka_czarnego_funkcja(pole_pionka);
+        sprawdz_mozliwe_bicie_pionka_funkcja(pole_pionka);
+    }
 
     // dzia³a i nie chce mi siê tego zmieniaæ
     //  ||
@@ -816,8 +816,8 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
         else
             cout << "Pionek NIE moze ruszyc sie w LEWO W DOL\n";
 
-    //BICIE!!!
-       if (zbijanie_prawo_gora == true && istnienie_zbijanego_pionka_pg ==true)
+        //BICIE!!!
+        if (zbijanie_prawo_gora == true && istnienie_zbijanego_pionka_pg == true)
             cout << "Pionek MOZE zbijać w PRAWO DO GORY\n";
         else
             cout << "Pionek NIE może zbijać w PRAWO DO GORY\n";
@@ -836,7 +836,6 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
             cout << "Pionek MOZE zbijac w LEWO W DOL\n";
         else
             cout << "Pionek NIE moze zbijac w LEWO W DOL\n";
-
     }
 
     //
@@ -850,11 +849,9 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
     if (zbijanie_prawo_gora == true || zbijanie_lewo_gora == true || zbijanie_prawo_dol == true || zbijanie_lewo_dol == true)
         mozliwe_bicie = true;
 
-
     // dla damek
     if (liczba_ruchow_w_lewo_dol_damki > 0 || liczba_ruchow_w_prawo_dol_damki > 0 || liczba_ruchow_w_lewo_gora_damki > 0 || liczba_ruchow_w_prawo_gora_damki > 0)
         mozliwy_ruch = true;
-
 
     //if (mozliwe_bicie ==true)
     //{
@@ -875,7 +872,7 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
     //
     //
 
-    if (mozliwy_ruch == true || mozliwe_bicie ==true)
+    if (mozliwy_ruch == true || mozliwe_bicie == true)
     {
     podano_zle_pole_do_ruchu:
         cout << "\nPodaj pole na planszy gdzie chesz ruszyc wybranego pionka: ";
@@ -904,34 +901,33 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
                     aktualizuj_plansze();
                 }
                 //ZMIANY!!!! zbijanie
-                else if ((((pionek[indeks_pionka].pole + 22) == numer_pola_do_ruchu) && (zbijanie_prawo_gora == true)) || (((pionek[indeks_pionka].pole + 18) == numer_pola_do_ruchu) && (zbijanie_lewo_gora == true)) || (((pionek[indeks_pionka].pole - 18) == numer_pola_do_ruchu) && (zbijanie_prawo_dol == true)) || (((pionek[indeks_pionka].pole - 22) == numer_pola_do_ruchu) && (zbijanie_lewo_dol ==true)))
+                else if ((((pionek[indeks_pionka].pole + 22) == numer_pola_do_ruchu) && (zbijanie_prawo_gora == true)) || (((pionek[indeks_pionka].pole + 18) == numer_pola_do_ruchu) && (zbijanie_lewo_gora == true)) || (((pionek[indeks_pionka].pole - 18) == numer_pola_do_ruchu) && (zbijanie_prawo_dol == true)) || (((pionek[indeks_pionka].pole - 22) == numer_pola_do_ruchu) && (zbijanie_lewo_dol == true)))
                 {
 
                     //ustawienie pola pionka zbijanego na 0
 
                     if ((((pionek[indeks_pionka].pole + 22) == numer_pola_do_ruchu) && (zbijanie_prawo_gora == true)))
                     {
-                        pionek[sprawdz_indeks_pionka((pole_pionka+11))].pole = 0;
+                        pionek[sprawdz_indeks_pionka((pole_pionka + 11))].pole = 0;
                     }
                     if ((((pionek[indeks_pionka].pole + 18) == numer_pola_do_ruchu) && (zbijanie_lewo_gora == true)))
                     {
-                        pionek[sprawdz_indeks_pionka((pole_pionka+9))].pole = 0;
+                        pionek[sprawdz_indeks_pionka((pole_pionka + 9))].pole = 0;
                     }
                     if ((((pionek[indeks_pionka].pole - 18) == numer_pola_do_ruchu) && (zbijanie_prawo_dol == true)))
                     {
-                        pionek[sprawdz_indeks_pionka((pole_pionka-9))].pole = 0;
+                        pionek[sprawdz_indeks_pionka((pole_pionka - 9))].pole = 0;
                     }
-                    if ((((pionek[indeks_pionka].pole -22) == numer_pola_do_ruchu) && (zbijanie_lewo_dol == true)))
+                    if ((((pionek[indeks_pionka].pole - 22) == numer_pola_do_ruchu) && (zbijanie_lewo_dol == true)))
                     {
-                        pionek[sprawdz_indeks_pionka((pole_pionka-11))].pole = 0;
+                        pionek[sprawdz_indeks_pionka((pole_pionka - 11))].pole = 0;
                     }
 
                     pionek[indeks_pionka].pole = numer_pola_do_ruchu;
 
                     aktualizuj_plansze();
-
-
-                }else // nie wykonano ruchu
+                }
+                else // nie wykonano ruchu
                     goto podano_zle_pole_do_ruchu;
             }
 
