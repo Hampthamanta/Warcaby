@@ -1,0 +1,9 @@
+# depslib dependency file v1.0
+1641644288 source:c:\users\ja\documents\c++\kod zrób tu zbijanie cholerra\main.cpp
+	<iostream>
+	<cstdlib>
+	<stdio.h>
+	<conio.h>
+	<algorithm>
+	<windows.h>
+
