@@ -41,6 +41,7 @@ string wybor;
 string sprawdz_pole;
 int numer_pola_gdzie_jest_pionek;
 bool mozliwy_ruch = false;
+bool mozliwe_bicie = false;
 
 bool ruch_w_prawo_gora = true, ruch_w_lewo_gora = true, ruch_w_prawo_dol = true, ruch_w_lewo_dol = true;
 
@@ -408,7 +409,7 @@ void sprawdz_mozliwy_ruch_pionka_bialego_funkcja(int pole_pionka)
 }
 
 //ZMIANYY!!!!!!!!!!!
-void sprawdz_mozliwe_bicie_pionka_bialego_funkcja(int pole_pionka)
+void sprawdz_mozliwe_bicie_pionka_funkcja(int pole_pionka)
 {
     //sprawdzanie czy na polu na które chce się ruszyć jest pionek
     for (int i=0; i<24;i++)
@@ -432,40 +433,40 @@ void sprawdz_mozliwe_bicie_pionka_bialego_funkcja(int pole_pionka)
 
     for (int i=0; i<24; i++)
     {
-        if ((pole_pionka + 11) == pionek[i].pole)
+        if (((pole_pionka + 11) == pionek[i].pole) && (zbijanie_prawo_gora == true))
          {
             istnienie_zbijanego_pionka_pg = true;
-            if (sprawdz_kolor_pionka(pole_pionka+11)=="bialy")
+            if (sprawdz_kolor_pionka((pole_pionka+11))==(pionek[sprawdz_indeks_pionka(pole_pionka)].kolor))
             {
                 zbijanie_prawo_gora = false;
             }
          }
 
 
-        if ((pole_pionka + 9) == pionek[i].pole)
+        if (((pole_pionka + 9) == pionek[i].pole) && (zbijanie_lewo_gora == true))
          {
             istnienie_zbijanego_pionka_lg = true;
-            if (sprawdz_kolor_pionka(pole_pionka+9)=="bialy")
+            if (sprawdz_kolor_pionka((pole_pionka+9))==(pionek[sprawdz_indeks_pionka(pole_pionka)].kolor))
             {
                 zbijanie_lewo_gora = false;
             }
          }
 
 
-        if ((pole_pionka - 11) == pionek[i].pole)
+        if (((pole_pionka - 11) == pionek[i].pole) && (zbijanie_lewo_dol == true))
          {
             istnienie_zbijanego_pionka_ld = true;
-            if (sprawdz_kolor_pionka(pole_pionka-11)=="bialy")
+            if (sprawdz_kolor_pionka((pole_pionka-11))==(pionek[sprawdz_indeks_pionka(pole_pionka)].kolor))
             {
                 zbijanie_lewo_dol = false;
             }
          }
 
 
-        if ((pole_pionka - 9) == pionek[i].pole)
+        if (((pole_pionka - 9) == pionek[i].pole) && (zbijanie_prawo_dol = true))
          {
            istnienie_zbijanego_pionka_pd = true;
-           if (sprawdz_kolor_pionka(pole_pionka-9)=="bialy")
+           if (sprawdz_kolor_pionka((pole_pionka-9))==(pionek[sprawdz_indeks_pionka(pole_pionka)].kolor))
            {
                zbijanie_prawo_dol = false;
            }
@@ -760,11 +761,14 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
     if (pionek[indeks_pionka].kolor == "bialy" && pionek[indeks_pionka].typ == "pionek")
     {
        sprawdz_mozliwy_ruch_pionka_bialego_funkcja(pole_pionka);
-       sprawdz_mozliwe_bicie_pionka_bialego_funkcja(pole_pionka);
+       sprawdz_mozliwe_bicie_pionka_funkcja(pole_pionka);
     }
 
     else if (pionek[indeks_pionka].kolor == "czarny" && pionek[indeks_pionka].typ == "pionek")
-        sprawdz_mozliwy_ruch_pionka_czarnego_funkcja(pole_pionka);
+        {
+            sprawdz_mozliwy_ruch_pionka_czarnego_funkcja(pole_pionka);
+            sprawdz_mozliwe_bicie_pionka_funkcja(pole_pionka);
+        }
 
     // dzia³a i nie chce mi siê tego zmieniaæ
     //  ||
@@ -843,6 +847,14 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
     if (ruch_w_prawo_gora == true || ruch_w_lewo_gora == true || ruch_w_prawo_dol == true || ruch_w_lewo_dol == true)
         mozliwy_ruch = true;
 
+    if (zbijanie_prawo_gora == true || zbijanie_lewo_gora == true || zbijanie_prawo_dol == true || zbijanie_lewo_dol == true)
+        mozliwe_bicie = true;
+
+    if (mozliwe_bicie ==true)
+    {
+        mozliwy_ruch = false;
+    }
+
     // dla damek
     if (liczba_ruchow_w_lewo_dol_damki > 0 || liczba_ruchow_w_prawo_dol_damki > 0 || liczba_ruchow_w_lewo_gora_damki > 0 || liczba_ruchow_w_prawo_gora_damki > 0)
         mozliwy_ruch = true;
@@ -899,19 +911,19 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
 
                     if ((((pionek[indeks_pionka].pole + 22) == numer_pola_do_ruchu) && (zbijanie_prawo_gora == true)))
                     {
-                        pionek[sprawdz_indeks_pionka(pole_pionka+11)].pole = 0;
+                        pionek[sprawdz_indeks_pionka((pole_pionka+11))].pole = 0;
                     }
                     if ((((pionek[indeks_pionka].pole + 18) == numer_pola_do_ruchu) && (zbijanie_lewo_gora == true)))
                     {
-                        pionek[sprawdz_indeks_pionka(pole_pionka+9)].pole = 0;
+                        pionek[sprawdz_indeks_pionka((pole_pionka+9))].pole = 0;
                     }
                     if ((((pionek[indeks_pionka].pole - 18) == numer_pola_do_ruchu) && (zbijanie_prawo_dol == true)))
                     {
-                        pionek[sprawdz_indeks_pionka(pole_pionka-9)].pole = 0;
+                        pionek[sprawdz_indeks_pionka((pole_pionka-9))].pole = 0;
                     }
                     if ((((pionek[indeks_pionka].pole -22) == numer_pola_do_ruchu) && (zbijanie_lewo_dol == true)))
                     {
-                        pionek[sprawdz_indeks_pionka(pole_pionka-11)].pole = 0;
+                        pionek[sprawdz_indeks_pionka((pole_pionka-11))].pole = 0;
                     }
 
                     aktualizuj_plansze();
@@ -1256,12 +1268,13 @@ int main()
             {
                 wykonaj_ruch(sprawdz_pole);
 
-                if (mozliwy_ruch == false)
+                if (mozliwy_ruch == false && mozliwe_bicie == false)
                 {
-                    cout << "Wybrany pionek nie moze wykonac ruchu lub nie znaleziono pionka!\n";
+                    cout << "Wybrany pionek nie moze wykonac ruchu, bicia lub nie znaleziono pionka!\n";
                     goto powtorka_ruchu;
                 }
                 mozliwy_ruch = false;
+                mozliwe_bicie == false;
             }
         }
         else if (wybor == "reset" || wybor == "2")
