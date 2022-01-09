@@ -744,7 +744,7 @@ void sprawdz_mozliwe_bicia_damki(int indeks_pionka)
         }
        }
         //sprawdzamy czy kolor pionka ktorego chcemy zbic jest przeciwny
-       if (pionek[id_pionka_ktory_moze_zbic_damka_pg].kolor == pionek[indeks_pionka].kolor)
+       if (pionek[id_pionka_ktory_moze_zbic_damka_lg].kolor == pionek[indeks_pionka].kolor)
        {
            zbijanie_damka_lg = false;
        }
@@ -759,7 +759,7 @@ void sprawdz_mozliwe_bicia_damki(int indeks_pionka)
     {
        for (int h = 0; h<24; h++)
        {
-         if((pionek[id_pionka_ktory_moze_zbic_damka_lg].pole - 9) == pionek[h].pole)
+         if((pionek[id_pionka_ktory_moze_zbic_damka_pd].pole - 9) == pionek[h].pole)
         {
             zbijanie_damka_pd = false;
         }
@@ -780,13 +780,13 @@ void sprawdz_mozliwe_bicia_damki(int indeks_pionka)
     {
        for (int h = 0; h<24; h++)
        {
-         if((pionek[id_pionka_ktory_moze_zbic_damka_lg].pole - 11) == pionek[h].pole)
+         if((pionek[id_pionka_ktory_moze_zbic_damka_ld].pole - 11) == pionek[h].pole)
         {
             zbijanie_damka_ld = false;
         }
        }
         //sprawdzamy czy kolor pionka ktorego chcemy zbic jest przeciwny
-       if(pionek[id_pionka_ktory_moze_zbic_damka_pg].kolor == pionek[indeks_pionka].kolor)
+       if(pionek[id_pionka_ktory_moze_zbic_damka_ld].kolor == pionek[indeks_pionka].kolor)
        {
            zbijanie_damka_ld = false;
        }
