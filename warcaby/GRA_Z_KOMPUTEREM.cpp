@@ -1268,6 +1268,115 @@ void GraczVsKomputer()
         }
     }
 }
+//
+//
+//
+//
+//
+//
+//
+//
+
+void KomputerVsKomputer()
+{
+    aktualizuj_plansze();
+
+    while (sprawdz_pole != "0") // pętla gry komputerów
+    {
+
+        if (czyja_tura == true) // ruch komputera 1 - biale
+        {
+            int lista_id_ruchow_b_k[12];
+            int n_los = 0;
+
+            for (int i = 0; i < 12; i++)
+            {
+                lista_id_ruchow_b_k[i] = -1;
+            }
+
+            cout << "Ruch bialych, komputera 1\n";
+
+            sprawdz_czy_jest_mozliwy_ruch();
+
+            {
+                int ii = 0;
+                for (int i = 0; i < 12; i++)
+                {
+                    if (lista_indeksow_p_i_d_ktore_moga_wykonac_ruch[i] != -1)
+                    {
+                        lista_id_ruchow_b_k[ii] = lista_indeksow_p_i_d_ktore_moga_wykonac_ruch[i];
+                        ii++;
+                        n_los++;
+                    }
+                }
+            }
+
+            int los_id = rand() % n_los;
+
+            //cout << "\n\n\t n_los " << n_los << "\t los_id " << los_id << "\t pionek o wylos. id " << lista_id_ruchow_b_k[los_id] << "\n";
+
+            wykonaj_ruch_komputera(lista_id_ruchow_b_k[los_id]);
+
+            zamiana_pionka_na_damke();
+
+            //     Kończy gre w trybie turowym [początek] ------- NIE UWZGLEDNIA JESZCZE MOZLIWOSCI ZBIJANIA
+
+            sprawdz_czy_jest_mozliwy_ruch();
+            sprawdz_zakonczenie_gry();
+
+            //     Kończy gre w trybie turowym [koniec] ------- NIE UWZGLEDNIA JESZCZE MOZLIWOSCI ZBIJANIA
+
+            czyja_tura = !czyja_tura; // zmiana tury
+            getch();
+        }
+
+        else if (czyja_tura == false) // ruch komputera 2 - czarne
+        {
+            int lista_id_ruchow_cz_k[12];
+            int n_los = 0;
+
+            for (int i = 0; i < 12; i++)
+            {
+                lista_id_ruchow_cz_k[i] = -1;
+            }
+
+            cout << "Ruch czarnych, komputera 2\n";
+
+            sprawdz_czy_jest_mozliwy_ruch();
+
+            {
+                int ii = 0;
+                for (int i = 12; i < 24; i++)
+                {
+                    if (lista_indeksow_p_i_d_ktore_moga_wykonac_ruch[i] != -1)
+                    {
+                        lista_id_ruchow_cz_k[ii] = lista_indeksow_p_i_d_ktore_moga_wykonac_ruch[i];
+                        ii++;
+                        n_los++;
+                    }
+                }
+            }
+
+            int los_id = rand() % n_los;
+
+            //cout << "\n\n\t n_los " << n_los << "\t los_id " << los_id << "\t pionek o wylos. id " << lista_id_ruchow_cz_k[los_id] << "\n";
+
+            wykonaj_ruch_komputera(lista_id_ruchow_cz_k[los_id]);
+
+            zamiana_pionka_na_damke();
+
+            //     Kończy gre w trybie turowym [początek] ------- NIE UWZGLEDNIA JESZCZE MOZLIWOSCI ZBIJANIA
+
+            sprawdz_czy_jest_mozliwy_ruch();
+            sprawdz_zakonczenie_gry();
+
+            //     Kończy gre w trybie turowym [koniec] ------- NIE UWZGLEDNIA JESZCZE MOZLIWOSCI ZBIJANIA
+
+            czyja_tura = !czyja_tura; // zmiana tury
+            getch();
+        }
+    }
+}
 
 //
 //
@@ -1421,13 +1530,7 @@ int main()
         cout << "----------------------------\n";
         cout << "Warcaby\n\nWpisz \"start\" lub 1 aby rozpoczac\nAby zakonczyc program \"exit\" lub 0\n";
         cout << "Aby zresetowac porgram \"reset\" lub 2\n";
-
-        //
-        //
-        cout << "sprawdz mozliwosc ruchow -- 3 (wylaczone komunikaty)\n";
-        cout << "zamien pionki na damki, jezeli mozna -- 4\n";
-        cout << "rozpoczyna gre turowa -- 5 \n";
-        cout << "zostaw 1 bialy -- 6 \nzostaw 1 czarny -- 7 \n";
+        cout << "rozpoczyna gre turowa -- 3 \n";
         //
         //
 
@@ -1458,21 +1561,12 @@ int main()
             system("cls");
             ustawienie_pionkow_na_planszy();
         }
-        else if (wybor == "3")
-        {
-            sprawdz_czy_jest_mozliwy_ruch();
-        }
-        else if (wybor == "4")
-        {
-            zamiana_pionka_na_damke();
-        }
-
         //----------------------------------------------------------------------------------------------------------------------------------------- GRA TUROWA
 
-        else if (wybor == "5") // gra turowa, "0" aby z niej wyjść
+        else if (wybor == "3") // gra turowa, "0" aby z niej wyjść
         {
             kto_gra = "0";
-            while (kto_gra != "1" && kto_gra != "2") // kto_gra != "1" && kto_gra != "2" && kto_gra != "3"
+            while (kto_gra != "1" && kto_gra != "2" && kto_gra != "3") // kto_gra != "1" && kto_gra != "2" && kto_gra != "3"
             {
                 system("cls");
                 cout << "Podaj kto gra:\n gracz vs. gracz - 1\n gracz vs. komputer - 2 (w procesie tworzenia)\n komputer vs. komputer - 3 xd\n";
@@ -1486,29 +1580,16 @@ int main()
                 GraczVsGracz();
             else if (kto_gra == "2")
                 GraczVsKomputer();
+            else if (kto_gra == "3")
+                KomputerVsKomputer();
         }
 
         //----------------------------------------------------------------------------------------------------------------------------------------- GRA TUROWA
-
-        else if (wybor == "6")
-        {
-            for (int i = 1; i < 24; i++)
-            {
-                pionek[i].pole = 0;
-            }
-        }
-        else if (wybor == "7")
-        {
-            for (int i = 0; i < 23; i++)
-            {
-                pionek[i].pole = 0;
-            }
-        }
     }
 
     //--------------------------------------------------------------------------------------------------
 
-    cout << "\n\n\t\t\tKoniec programu\n\n";
+    cout << "\n\n\t\t\tKoniec programu\n\n\n";
 
     //getch();
     return 0;
