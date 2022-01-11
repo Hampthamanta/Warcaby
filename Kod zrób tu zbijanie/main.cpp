@@ -57,7 +57,7 @@ bool istnienie_zbijanego_pionka_ld = false;
 
 int ile_mozliwych_ruchow_bialych = 0, ile_mozliwych_ruchow_czarnych = 0;
 
-int *pola_gdzie_damka_moze_sie_ruszyc;
+int pola_gdzie_damka_moze_sie_ruszyc[32];
 int liczba_ruchow_w_prawo_gora_damki = 0, liczba_ruchow_w_lewo_gora_damki = 0, liczba_ruchow_w_prawo_dol_damki = 0, liczba_ruchow_w_lewo_dol_damki = 0;
 
 int id_pionka_ktory_moze_zbic_damka_pg = -1, id_pionka_ktory_moze_zbic_damka_pd = -1, id_pionka_ktory_moze_zbic_damka_lg = -1, id_pionka_ktory_moze_zbic_damka_ld = -1;
@@ -286,7 +286,7 @@ int sprawdz_numer_pola(string nazwa_pola_f) // funkcja sprawdzajaca podana nazwe
 //
 
 int sprawdz_indeks_pionka(int nr_pola) // funkcja sprawdza czy na podanym polu znajduje sie pionek, jezeli tak to zwraca jego inkeds(id),
-{                                      //                                      jezeli nie ma tam pionka to zwraca 0
+{                                      //                                      jezeli nie ma tam pionka to zwraca -1
     int id_pola = -1;
 
     for (int j = 0; j < 24; j++) // to jest na razie dla wszystkich pionkow. Pozniej podzielic na biale i czarne
@@ -511,7 +511,7 @@ void sprawdz_mozliwe_ruchy_damki(int indeks_pionka)
     id_pionka_ktory_moze_zbic_damka_lg = -1;
     id_pionka_ktory_moze_zbic_damka_ld = -1;
 
-    pola_gdzie_damka_moze_sie_ruszyc = new int[32]; // ta tablica nie usuwa sie wraz z koncem tej funkcji
+    //pola_gdzie_damka_moze_sie_ruszyc = new int[32]; // ta tablica nie usuwa sie wraz z koncem tej funkcji
 
     for (int i = 0; i < 32; i++)
     {
@@ -707,6 +707,10 @@ void sprawdz_mozliwe_ruchy_damki(int indeks_pionka)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void sprawdz_mozliwe_bicia_damki(int indeks_pionka)
 {
+    zbijanie_damka_pg = true;
+    zbijanie_damka_lg = true;
+    zbijanie_damka_pd = true;
+    zbijanie_damka_ld = true;
     //sprawdzanie czy w pg jest pionek ktorego mozna zbic///////////////////////////////////////
     if (id_pionka_ktory_moze_zbic_damka_pg == -1)
     {
@@ -925,7 +929,7 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
         if (zbijanie_prawo_gora == true && istnienie_zbijanego_pionka_pg == true)
             cout << "Pionek MOZE zbijać w PRAWO DO GORY\n";
         else
-            cout << "Pionek NIE może zbijać w PRAWO DO GORY\n";
+            cout << "Pionek NIE moze zbijac w PRAWO DO GORY\n";
 
         if (zbijanie_lewo_gora == true && istnienie_zbijanego_pionka_lg == true)
             cout << "Pionek MOZE zbijac w LEWO DO GORY\n";
@@ -957,6 +961,12 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
     // dla damek
     if (liczba_ruchow_w_lewo_dol_damki > 0 || liczba_ruchow_w_prawo_dol_damki > 0 || liczba_ruchow_w_lewo_gora_damki > 0 || liczba_ruchow_w_prawo_gora_damki > 0)
         mozliwy_ruch = true;
+    if (zbijanie_damka_pg == true || zbijanie_damka_lg == true || zbijanie_damka_pd == true || zbijanie_damka_ld == true)
+        {
+            mozliwe_bicie = true;
+        }
+
+
 
     //if (mozliwe_bicie ==true)
     //{
@@ -1040,6 +1050,7 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
             {
                 bool wykonano_ruch = false;
 
+
                 for (int i = 0; i < 32; i++)
                 {
                     if (numer_pola_do_ruchu == pola_gdzie_damka_moze_sie_ruszyc[i])
@@ -1049,6 +1060,30 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
                         aktualizuj_plansze();
                         wykonano_ruch = true;
                     }
+
+                }
+                if ((((pionek[id_pionka_ktory_moze_zbic_damka_pg].pole + 11) == numer_pola_do_ruchu) && (zbijanie_damka_pg == true)) || (((pionek[id_pionka_ktory_moze_zbic_damka_lg].pole + 9) == numer_pola_do_ruchu) && (zbijanie_damka_lg == true)) || (((pionek[id_pionka_ktory_moze_zbic_damka_pd].pole - 9) == numer_pola_do_ruchu) && (zbijanie_damka_pd == true)) || (((pionek[id_pionka_ktory_moze_zbic_damka_ld].pole - 11) == numer_pola_do_ruchu) && (zbijanie_damka_ld == true)))
+                {
+                    if ((((pionek[id_pionka_ktory_moze_zbic_damka_pg].pole + 11) == numer_pola_do_ruchu) && (zbijanie_damka_pg == true)))
+                    {
+                         pionek[id_pionka_ktory_moze_zbic_damka_pg].pole = 0;
+                    }
+                    if ((((pionek[id_pionka_ktory_moze_zbic_damka_lg].pole + 9) == numer_pola_do_ruchu) && (zbijanie_damka_lg == true)))
+                    {
+                         pionek[id_pionka_ktory_moze_zbic_damka_lg].pole = 0;
+                    }
+                    if ((((pionek[id_pionka_ktory_moze_zbic_damka_pd].pole - 9) == numer_pola_do_ruchu) && (zbijanie_damka_pd == true)))
+                    {
+                         pionek[id_pionka_ktory_moze_zbic_damka_pd].pole = 0;
+                    }
+                    if ((((pionek[id_pionka_ktory_moze_zbic_damka_ld].pole - 11) == numer_pola_do_ruchu) && (zbijanie_damka_ld == true)))
+                    {
+                         pionek[id_pionka_ktory_moze_zbic_damka_ld].pole = 0;
+                    }
+
+                    pionek[indeks_pionka].pole = numer_pola_do_ruchu;
+                    aktualizuj_plansze();
+                    wykonano_ruch = true;
                 }
 
                 if (wykonano_ruch == false)
@@ -1056,7 +1091,7 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
             }
         }
     }
-    delete[] pola_gdzie_damka_moze_sie_ruszyc;
+
 
     cout << endl;
 }
@@ -1148,7 +1183,7 @@ void sprawdz_czy_jest_mozliwy_ruch()
     ile_mozliwych_ruchow_czarnych = 0;
 
     // int lista_indeksow_p_i_d_ktore_moga_wykonac_ruch[24];
-    int *lista_indeksow_p_i_d_ktore_moga_wykonac_ruch = new int[24];
+    int lista_indeksow_p_i_d_ktore_moga_wykonac_ruch[24];
 
     for (int i = 0; i < 24; i++)
     {
@@ -1213,8 +1248,7 @@ void sprawdz_czy_jest_mozliwy_ruch()
             cout << "   " << lista_indeksow_p_i_d_ktore_moga_wykonac_ruch[i] << "\n";
     }
 
-    delete[] lista_indeksow_p_i_d_ktore_moga_wykonac_ruch;
-    delete[] pola_gdzie_damka_moze_sie_ruszyc;
+
 }
 
 //
