@@ -884,8 +884,10 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
     //  \/
 
     else if (pionek[indeks_pionka].typ == "damka") // DAMKI SPRAWDZANIE RUCHU
+    {
         sprawdz_mozliwe_ruchy_damki(indeks_pionka);
-    sprawdz_mozliwe_bicia_damki(indeks_pionka);
+        sprawdz_mozliwe_bicia_damki(indeks_pionka);
+    }
 
     //
     //
