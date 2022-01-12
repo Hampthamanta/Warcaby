@@ -457,7 +457,7 @@ void sprawdz_mozliwe_bicie_pionka_funkcja(int pole_pionka)
             }
         }
 
-        if (((pole_pionka - 9) == pionek[i].pole) && (zbijanie_prawo_dol = true))
+        if (((pole_pionka - 9) == pionek[i].pole) && (zbijanie_prawo_dol == true))
         {
             istnienie_zbijanego_pionka_pd = true;
             if (sprawdz_kolor_pionka((pole_pionka - 9)) == (pionek[sprawdz_indeks_pionka(pole_pionka)].kolor))
@@ -719,18 +719,18 @@ void sprawdz_mozliwe_bicia_damki(int indeks_pionka)
     //jesli jest, to sprawdzamy czy na polu za nim znajduje sie pionek
     else
     {
-       for (int h = 0; h<24; h++)
-       {
-         if((pionek[id_pionka_ktory_moze_zbic_damka_pg].pole + 11) == pionek[h].pole)
+        for (int h = 0; h < 24; h++)
+        {
+            if ((pionek[id_pionka_ktory_moze_zbic_damka_pg].pole + 11) == pionek[h].pole)
+            {
+                zbijanie_damka_pg = false;
+            }
+        }
+        //sprawdzamy czy kolor pionka ktorego chcemy zbic jest przeciwny
+        if ((pionek[id_pionka_ktory_moze_zbic_damka_pg].kolor == pionek[indeks_pionka].kolor))
         {
             zbijanie_damka_pg = false;
         }
-       }
-       //sprawdzamy czy kolor pionka ktorego chcemy zbic jest przeciwny
-       if((pionek[id_pionka_ktory_moze_zbic_damka_pg].kolor == pionek[indeks_pionka].kolor))
-       {
-           zbijanie_damka_pg = false;
-       }
     }
     //sprawdzanie czy w lg jest pionek ktorego mozna zbic///////////////////////////////////////
     if (id_pionka_ktory_moze_zbic_damka_lg == -1)
@@ -740,18 +740,18 @@ void sprawdz_mozliwe_bicia_damki(int indeks_pionka)
     //jesli jest, to sprawdzamy czy na polu za nim znajduje sie pionek
     else
     {
-       for (int h = 0; h<24; h++)
-       {
-         if((pionek[id_pionka_ktory_moze_zbic_damka_lg].pole + 9) == pionek[h].pole)
+        for (int h = 0; h < 24; h++)
+        {
+            if ((pionek[id_pionka_ktory_moze_zbic_damka_lg].pole + 9) == pionek[h].pole)
+            {
+                zbijanie_damka_lg = false;
+            }
+        }
+        //sprawdzamy czy kolor pionka ktorego chcemy zbic jest przeciwny
+        if (pionek[id_pionka_ktory_moze_zbic_damka_lg].kolor == pionek[indeks_pionka].kolor)
         {
             zbijanie_damka_lg = false;
         }
-       }
-        //sprawdzamy czy kolor pionka ktorego chcemy zbic jest przeciwny
-       if (pionek[id_pionka_ktory_moze_zbic_damka_lg].kolor == pionek[indeks_pionka].kolor)
-       {
-           zbijanie_damka_lg = false;
-       }
     }
     //sprawdzanie czy w pd jest pionek ktorego mozna zbic//////////////////////////////////////
     if (id_pionka_ktory_moze_zbic_damka_pd == -1)
@@ -761,18 +761,18 @@ void sprawdz_mozliwe_bicia_damki(int indeks_pionka)
     //jesli jest, to sprawdzamy czy na polu za nim znajduje sie pionek
     else
     {
-       for (int h = 0; h<24; h++)
-       {
-         if((pionek[id_pionka_ktory_moze_zbic_damka_pd].pole - 9) == pionek[h].pole)
+        for (int h = 0; h < 24; h++)
+        {
+            if ((pionek[id_pionka_ktory_moze_zbic_damka_pd].pole - 9) == pionek[h].pole)
+            {
+                zbijanie_damka_pd = false;
+            }
+        }
+        //sprawdzamy czy kolor pionka ktorego chcemy zbic jest przeciwny
+        if (pionek[id_pionka_ktory_moze_zbic_damka_pg].kolor == pionek[indeks_pionka].kolor)
         {
             zbijanie_damka_pd = false;
         }
-       }
-        //sprawdzamy czy kolor pionka ktorego chcemy zbic jest przeciwny
-       if(pionek[id_pionka_ktory_moze_zbic_damka_pg].kolor == pionek[indeks_pionka].kolor)
-       {
-           zbijanie_damka_pd = false;
-       }
     }
     //sprawdzanie czy w ld jest pionek ktorego mozna zbic//////////////////////////////////////
     if (id_pionka_ktory_moze_zbic_damka_ld == -1)
@@ -782,18 +782,18 @@ void sprawdz_mozliwe_bicia_damki(int indeks_pionka)
     //jesli jest, to sprawdzamy czy na polu za nim znajduje sie pionek
     else
     {
-       for (int h = 0; h<24; h++)
-       {
-         if((pionek[id_pionka_ktory_moze_zbic_damka_ld].pole - 11) == pionek[h].pole)
+        for (int h = 0; h < 24; h++)
+        {
+            if ((pionek[id_pionka_ktory_moze_zbic_damka_ld].pole - 11) == pionek[h].pole)
+            {
+                zbijanie_damka_ld = false;
+            }
+        }
+        //sprawdzamy czy kolor pionka ktorego chcemy zbic jest przeciwny
+        if (pionek[id_pionka_ktory_moze_zbic_damka_ld].kolor == pionek[indeks_pionka].kolor)
         {
             zbijanie_damka_ld = false;
         }
-       }
-        //sprawdzamy czy kolor pionka ktorego chcemy zbic jest przeciwny
-       if(pionek[id_pionka_ktory_moze_zbic_damka_ld].kolor == pionek[indeks_pionka].kolor)
-       {
-           zbijanie_damka_ld = false;
-       }
     }
 
     if (zbijanie_damka_pg == true)
@@ -802,15 +802,15 @@ void sprawdz_mozliwe_bicia_damki(int indeks_pionka)
         cout << "damka nie moze zbijac prawogora" << endl;
     if (zbijanie_damka_lg == true)
         cout << "damka MOZE zbijac lewogora" << endl;
-     else
+    else
         cout << "damka nie moze zbijac lewogora" << endl;
     if (zbijanie_damka_pd == true)
         cout << "damka MOZE zbijac prawodol" << endl;
-     else
+    else
         cout << "damka nie moze zbijac prawodol" << endl;
     if (zbijanie_damka_ld == true)
         cout << "damka MOZE zbijac lewodol" << endl;
-     else
+    else
         cout << "damka nie moze zbijac lewodol" << endl;
 }
 //
@@ -836,9 +836,9 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
         ruch_w_lewo_dol = true;
 
         //ZMIANYY TUTAJ!!!
-        zbijanie_prawo_gora = true,
-        zbijanie_lewo_gora = true,
-        zbijanie_prawo_dol = true,
+        zbijanie_prawo_gora = true;
+        zbijanie_lewo_gora = true;
+        zbijanie_prawo_dol = true;
         zbijanie_lewo_dol = true;
 
         istnienie_zbijanego_pionka_pg = false;
@@ -885,7 +885,7 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
 
     else if (pionek[indeks_pionka].typ == "damka") // DAMKI SPRAWDZANIE RUCHU
         sprawdz_mozliwe_ruchy_damki(indeks_pionka);
-        sprawdz_mozliwe_bicia_damki(indeks_pionka);
+    sprawdz_mozliwe_bicia_damki(indeks_pionka);
 
     //
     //
@@ -961,12 +961,9 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
     // dla damek
     if (liczba_ruchow_w_lewo_dol_damki > 0 || liczba_ruchow_w_prawo_dol_damki > 0 || liczba_ruchow_w_lewo_gora_damki > 0 || liczba_ruchow_w_prawo_gora_damki > 0)
         mozliwy_ruch = true;
+
     if (zbijanie_damka_pg == true || zbijanie_damka_lg == true || zbijanie_damka_pd == true || zbijanie_damka_ld == true)
-        {
-            mozliwe_bicie = true;
-        }
-
-
+        mozliwe_bicie = true;
 
     //if (mozliwe_bicie ==true)
     //{
@@ -1050,7 +1047,6 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
             {
                 bool wykonano_ruch = false;
 
-
                 for (int i = 0; i < 32; i++)
                 {
                     if (numer_pola_do_ruchu == pola_gdzie_damka_moze_sie_ruszyc[i])
@@ -1060,25 +1056,24 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
                         aktualizuj_plansze();
                         wykonano_ruch = true;
                     }
-
                 }
                 if ((((pionek[id_pionka_ktory_moze_zbic_damka_pg].pole + 11) == numer_pola_do_ruchu) && (zbijanie_damka_pg == true)) || (((pionek[id_pionka_ktory_moze_zbic_damka_lg].pole + 9) == numer_pola_do_ruchu) && (zbijanie_damka_lg == true)) || (((pionek[id_pionka_ktory_moze_zbic_damka_pd].pole - 9) == numer_pola_do_ruchu) && (zbijanie_damka_pd == true)) || (((pionek[id_pionka_ktory_moze_zbic_damka_ld].pole - 11) == numer_pola_do_ruchu) && (zbijanie_damka_ld == true)))
                 {
                     if ((((pionek[id_pionka_ktory_moze_zbic_damka_pg].pole + 11) == numer_pola_do_ruchu) && (zbijanie_damka_pg == true)))
                     {
-                         pionek[id_pionka_ktory_moze_zbic_damka_pg].pole = 0;
+                        pionek[id_pionka_ktory_moze_zbic_damka_pg].pole = 0;
                     }
                     if ((((pionek[id_pionka_ktory_moze_zbic_damka_lg].pole + 9) == numer_pola_do_ruchu) && (zbijanie_damka_lg == true)))
                     {
-                         pionek[id_pionka_ktory_moze_zbic_damka_lg].pole = 0;
+                        pionek[id_pionka_ktory_moze_zbic_damka_lg].pole = 0;
                     }
                     if ((((pionek[id_pionka_ktory_moze_zbic_damka_pd].pole - 9) == numer_pola_do_ruchu) && (zbijanie_damka_pd == true)))
                     {
-                         pionek[id_pionka_ktory_moze_zbic_damka_pd].pole = 0;
+                        pionek[id_pionka_ktory_moze_zbic_damka_pd].pole = 0;
                     }
                     if ((((pionek[id_pionka_ktory_moze_zbic_damka_ld].pole - 11) == numer_pola_do_ruchu) && (zbijanie_damka_ld == true)))
                     {
-                         pionek[id_pionka_ktory_moze_zbic_damka_ld].pole = 0;
+                        pionek[id_pionka_ktory_moze_zbic_damka_ld].pole = 0;
                     }
 
                     pionek[indeks_pionka].pole = numer_pola_do_ruchu;
@@ -1091,7 +1086,6 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
             }
         }
     }
-
 
     cout << endl;
 }
@@ -1247,8 +1241,6 @@ void sprawdz_czy_jest_mozliwy_ruch()
         if (lista_indeksow_p_i_d_ktore_moga_wykonac_ruch[i] != 0)
             cout << "   " << lista_indeksow_p_i_d_ktore_moga_wykonac_ruch[i] << "\n";
     }
-
-
 }
 
 //

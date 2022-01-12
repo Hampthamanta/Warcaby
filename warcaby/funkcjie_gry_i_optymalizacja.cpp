@@ -1,13 +1,20 @@
 //
-// Na razie działa sprawdzanie gdzie damka może się ruszyć
+//  24 pionki, 12 białych o indeksach [0;11] i 12 czarnych o indeksach [12;23]
+//
+//  gdy pionek jest zbity to jego pole jest ustawione na "0"
+//      dlatego przy warunkach i pętlach związanych z sprawdzaniem pól nie znalezienie pionka zwraca -1
+//
 //
 
 #include <iostream>
 #include <cstdlib>
 #include <stdio.h>
 #include <conio.h>
+#include <stdlib.h>
+#include <time.h>
 #include <algorithm>
 #include <windows.h>
+#include <vector>
 
 using namespace std;
 
@@ -41,12 +48,33 @@ string wybor;
 string sprawdz_pole;
 int numer_pola_gdzie_jest_pionek;
 bool mozliwy_ruch = false;
+bool mozliwe_bicie = false, mozliwe_bicie_komputera = false;
 
 bool ruch_w_prawo_gora = true, ruch_w_lewo_gora = true, ruch_w_prawo_dol = true, ruch_w_lewo_dol = true;
+
+bool mozliwy_ruch_bialych = true, mozliwy_ruch_czarnych = true;
 int ile_mozliwych_ruchow_bialych = 0, ile_mozliwych_ruchow_czarnych = 0;
 
-int *pola_gdzie_damka_moze_sie_ruszyc;
+int lista_indeksow_p_i_d_ktore_moga_wykonac_ruch[24];
+int pola_gdzie_damka_moze_sie_ruszyc[32];
 int liczba_ruchow_w_prawo_gora_damki = 0, liczba_ruchow_w_lewo_gora_damki = 0, liczba_ruchow_w_prawo_dol_damki = 0, liczba_ruchow_w_lewo_dol_damki = 0;
+
+bool zbijanie_prawo_gora = true, zbijanie_lewo_gora = true, zbijanie_prawo_dol = true, zbijanie_lewo_dol = true;
+bool zbijanie_damka_pg = true, zbijanie_damka_lg = true, zbijanie_damka_pd = true, zbijanie_damka_ld = true;
+
+bool istnienie_zbijanego_pionka_pg = false;
+bool istnienie_zbijanego_pionka_lg = false;
+bool istnienie_zbijanego_pionka_pd = false;
+bool istnienie_zbijanego_pionka_ld = false;
+
+int id_pionka_ktory_moze_zbic_damka_pg = -1, id_pionka_ktory_moze_zbic_damka_pd = -1, id_pionka_ktory_moze_zbic_damka_lg = -1, id_pionka_ktory_moze_zbic_damka_ld = -1;
+
+bool czyja_tura = true; // "true" - ruch białych, "false" - ruch czarnych
+bool wybrano_poprawnie_pionka_tury = false;
+
+string kto_gra = "0"; // "1" - gracz na gracza, "2"- gracz na komputer, "3" - komputer na komputer.  Może kiedyś się przyda xd
+
+char pauza; // do debugera w vs
 
 //
 // biale pioneki: \2, damki: \3
@@ -150,26 +178,53 @@ void ustawienie_pionkow_na_planszy()
 //
 //
 
-void aktualizuj_plansze()
+void zamiana_pionka_na_damke()
 {
-    int n = 11;
-
-    system("cls");
-
-    ////////////////////////////////////////////////////////////////////////////////// przełożyć to później do funkcji zamieniającej pionka na damke
-    //////////////////////////////////////////////////////////////////////////////////
-    for (int i = 0; i < 24; i++)
+    for (int i = 0; i < 12; i++) // dla bialych
     {
-        if (pionek[i].typ == "damka")
+        if (pionek[i].typ == "pionek")
         {
-            if (i < 12)
-                pionek[i].znak = "\3"; // dla bialych
-            else
-                pionek[i].znak = "\6"; // dla czarnych
+            if (pionek[i].pole == 82 || pionek[i].pole == 84 || pionek[i].pole == 86 || pionek[i].pole == 88)
+            {
+                pionek[i].typ = "damka";
+                pionek[i].znak = "\3";
+            }
         }
     }
-    //////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////////
+
+    for (int i = 12; i < 24; i++) // dla czarnych
+    {
+        if (pionek[i].typ == "pionek")
+        {
+            if (pionek[i].pole == 11 || pionek[i].pole == 13 || pionek[i].pole == 15 || pionek[i].pole == 17)
+            {
+                pionek[i].typ = "damka";
+                pionek[i].znak = "\6";
+            }
+        }
+    }
+}
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+void aktualizuj_plansze()
+{
+    system("cls");
+
+    int n = 11;
 
     for (int k = 0; k < 32; k++) // ustawienie znakow na polach czarnych
     {
@@ -272,7 +327,7 @@ int sprawdz_numer_pola(string nazwa_pola_f) // funkcja sprawdzajaca podana nazwe
 //
 
 int sprawdz_indeks_pionka(int nr_pola) // funkcja sprawdza czy na podanym polu znajduje sie pionek, jezeli tak to zwraca jego inkeds(id),
-{                                      //                                      jezeli nie ma tam pionka to zwraca 0
+{                                      //                                      jezeli nie ma tam pionka to zwraca -1
     int id_pola = -1;
 
     for (int j = 0; j < 24; j++) // to jest na razie dla wszystkich pionkow. Pozniej podzielic na biale i czarne
@@ -280,7 +335,7 @@ int sprawdz_indeks_pionka(int nr_pola) // funkcja sprawdza czy na podanym polu z
         if (nr_pola == pionek[j].pole)
         {
             id_pola = j;
-            cout << "Na wybranym polu zajduje sie " << pionek[j].typ << " " << pionek[j].kolor << " o indeksie " << j << endl;
+            // cout << "Na wybranym polu zajduje sie " << pionek[j].typ << " " << pionek[j].kolor << " o indeksie " << j << endl;
         }
     }
 
@@ -293,6 +348,20 @@ int sprawdz_indeks_pionka(int nr_pola) // funkcja sprawdza czy na podanym polu z
 //
 //
 //
+
+string sprawdz_kolor_pionka(int nr_pola)
+{
+    string kolor;
+    for (int k = 0; k < 24; k++)
+    {
+        if (nr_pola == pionek[k].pole)
+        {
+            kolor = pionek[k].kolor;
+        }
+    }
+    return kolor;
+}
+
 //
 //
 //
@@ -332,6 +401,34 @@ void sprawdz_mozliwy_ruch_pionka_krawedzie_funkcja(int indeks_pionka)
 //
 //
 //
+
+void sprawdz_mozliwe_bicie_pionka_krawedzie_funkcja(int indeks_pionka)
+{
+    if (pionek[indeks_pionka].typ == "pionek")
+    {
+        if (pionek[indeks_pionka].pole == 88 || pionek[indeks_pionka].pole == 86 || pionek[indeks_pionka].pole == 84 || pionek[indeks_pionka].pole == 82 || pionek[indeks_pionka].pole == 71 || pionek[indeks_pionka].pole == 73 || pionek[indeks_pionka].pole == 75 || pionek[indeks_pionka].pole == 77)
+        {
+            zbijanie_prawo_gora = false;
+            zbijanie_lewo_gora = false;
+        }
+        if (pionek[indeks_pionka].pole == 11 || pionek[indeks_pionka].pole == 13 || pionek[indeks_pionka].pole == 15 || pionek[indeks_pionka].pole == 17 || pionek[indeks_pionka].pole == 22 || pionek[indeks_pionka].pole == 24 || pionek[indeks_pionka].pole == 26 || pionek[indeks_pionka].pole == 28)
+        {
+            zbijanie_prawo_dol = false;
+            zbijanie_lewo_dol = false;
+        }
+        if (pionek[indeks_pionka].pole == 88 || pionek[indeks_pionka].pole == 77 || pionek[indeks_pionka].pole == 68 || pionek[indeks_pionka].pole == 57 || pionek[indeks_pionka].pole == 48 || pionek[indeks_pionka].pole == 37 || pionek[indeks_pionka].pole == 28 || pionek[indeks_pionka].pole == 17)
+        {
+            zbijanie_prawo_gora = false;
+            zbijanie_prawo_dol = false;
+        }
+        if (pionek[indeks_pionka].pole == 82 || pionek[indeks_pionka].pole == 71 || pionek[indeks_pionka].pole == 62 || pionek[indeks_pionka].pole == 51 || pionek[indeks_pionka].pole == 42 || pionek[indeks_pionka].pole == 31 || pionek[indeks_pionka].pole == 22 || pionek[indeks_pionka].pole == 11)
+        {
+            zbijanie_lewo_gora = false;
+            zbijanie_lewo_dol = false;
+        }
+    }
+}
+
 //
 //
 //
@@ -376,6 +473,67 @@ void sprawdz_mozliwy_ruch_pionka_czarnego_funkcja(int pole_pionka)
 //
 //
 //
+
+void sprawdz_mozliwe_bicie_pionka_funkcja(int pole_pionka)
+{
+    //sprawdzanie czy na polu na które chce się ruszyć jest pionek
+    for (int i = 0; i < 24; i++)
+    {
+        if ((pole_pionka + 22) == pionek[i].pole)
+            zbijanie_prawo_gora = false;
+
+        if ((pole_pionka + 18) == pionek[i].pole)
+            zbijanie_lewo_gora = false;
+
+        if ((pole_pionka - 18) == pionek[i].pole)
+            zbijanie_prawo_dol = false;
+
+        if ((pole_pionka - 22) == pionek[i].pole)
+            zbijanie_lewo_dol = false;
+    }
+
+    //sprawdzenie czy jest pionek na polu które chcemy zbić i jakiego jest koloru
+
+    for (int i = 0; i < 24; i++)
+    {
+        if (((pole_pionka + 11) == pionek[i].pole) && (zbijanie_prawo_gora == true))
+        {
+            istnienie_zbijanego_pionka_pg = true;
+            if (sprawdz_kolor_pionka((pole_pionka + 11)) == (pionek[sprawdz_indeks_pionka(pole_pionka)].kolor))
+            {
+                zbijanie_prawo_gora = false;
+            }
+        }
+
+        if (((pole_pionka + 9) == pionek[i].pole) && (zbijanie_lewo_gora == true))
+        {
+            istnienie_zbijanego_pionka_lg = true;
+            if (sprawdz_kolor_pionka((pole_pionka + 9)) == (pionek[sprawdz_indeks_pionka(pole_pionka)].kolor))
+            {
+                zbijanie_lewo_gora = false;
+            }
+        }
+
+        if (((pole_pionka - 11) == pionek[i].pole) && (zbijanie_lewo_dol == true))
+        {
+            istnienie_zbijanego_pionka_ld = true;
+            if (sprawdz_kolor_pionka((pole_pionka - 11)) == (pionek[sprawdz_indeks_pionka(pole_pionka)].kolor))
+            {
+                zbijanie_lewo_dol = false;
+            }
+        }
+
+        if (((pole_pionka - 9) == pionek[i].pole) && (zbijanie_prawo_dol == true))
+        {
+            istnienie_zbijanego_pionka_pd = true;
+            if (sprawdz_kolor_pionka((pole_pionka - 9)) == (pionek[sprawdz_indeks_pionka(pole_pionka)].kolor))
+            {
+                zbijanie_prawo_dol = false;
+            }
+        }
+    }
+}
+
 //
 //
 //
@@ -389,18 +547,21 @@ void sprawdz_mozliwe_ruchy_damki(int indeks_pionka)
     liczba_ruchow_w_prawo_dol_damki = 0;
     liczba_ruchow_w_lewo_dol_damki = 0;
 
-    pola_gdzie_damka_moze_sie_ruszyc = new int[32]; // ta tablica nie usuwa sie wraz z koncem tej funkcji
+    id_pionka_ktory_moze_zbic_damka_pg = -1;
+    id_pionka_ktory_moze_zbic_damka_pd = -1;
+    id_pionka_ktory_moze_zbic_damka_lg = -1;
+    id_pionka_ktory_moze_zbic_damka_ld = -1;
 
     for (int i = 0; i < 32; i++)
     {
-        pola_gdzie_damka_moze_sie_ruszyc[i] = 0; // wyczyszczenie komorek pamieci
+        pola_gdzie_damka_moze_sie_ruszyc[i] = 0; // wyzerowanie komórek pamieci
     }
 
     int id_pionka = -1;
     int szukane_pole = 0;
 
     // ruch w prawo gora
-    for (int rpg = 0; rpg < 7; rpg++) // maksymalna liczba ruchow damki po jednej przekatenej PRAWO GORA (DAMKA)
+    for (int rpg = 0; rpg < 7; rpg++) // maksymalna liczba ruchow damki po jednej przekatenej PRAWO GORA
     {
         if (pionek[indeks_pionka].pole == 88 || pionek[indeks_pionka].pole == 68 || pionek[indeks_pionka].pole == 48 || pionek[indeks_pionka].pole == 28 || pionek[indeks_pionka].pole == 86 || pionek[indeks_pionka].pole == 84 || pionek[indeks_pionka].pole == 82)
         {
@@ -437,15 +598,15 @@ void sprawdz_mozliwe_ruchy_damki(int indeks_pionka)
                 else
                 {
                     rpg = 8;
+                    id_pionka_ktory_moze_zbic_damka_pg = id_pionka;
                     // cout << "\n                 koniec ruchow damki na polu " << pionek[id_pionka].pole << "    rzekoma przeszkoda jako pionek na tym polu " << id_pionka << "\n\n";
                 }
             }
         }
     }
-    cout << "                         Wybrana damka moze wykonac " << liczba_ruchow_w_prawo_gora_damki << " ruchow w prawo gora   -- ta czynnosc jeszcze nie uwzglednia bicia!\n";
 
     // ruch w lewo gora
-    for (int rlg = 0; rlg < 7; rlg++) // maksymalna liczba ruchow damki po jednej przekatenej LEWO GORA (DAMKA)
+    for (int rlg = 0; rlg < 7; rlg++) // maksymalna liczba ruchow damki po jednej przekatenej LEWO GORA
     {
         if (pionek[indeks_pionka].pole == 71 || pionek[indeks_pionka].pole == 51 || pionek[indeks_pionka].pole == 31 || pionek[indeks_pionka].pole == 11 || pionek[indeks_pionka].pole == 88 || pionek[indeks_pionka].pole == 86 || pionek[indeks_pionka].pole == 84 || pionek[indeks_pionka].pole == 82)
         {
@@ -480,15 +641,15 @@ void sprawdz_mozliwe_ruchy_damki(int indeks_pionka)
                 else
                 {
                     rlg = 8;
+                    id_pionka_ktory_moze_zbic_damka_lg = id_pionka;
                     // cout << "\n                 koniec ruchow damki na polu " << pionek[id_pionka].pole << "    rzekoma przeszkoda jako pionek na tym polu " << id_pionka << "\n\n";
                 }
             }
         }
     }
-    cout << "                         Wybrana damka moze wykonac " << liczba_ruchow_w_lewo_gora_damki << " ruchow w lewo gora   -- ta czynnosc jeszcze nie uwzglednia bicia!\n";
 
     // ruch w prawy dol
-    for (int rpd = 0; rpd < 7; rpd++) // maksymalna liczba ruchow damki po jednej przekatenej PRAWO DOL (DAMKA)
+    for (int rpd = 0; rpd < 7; rpd++) // maksymalna liczba ruchow damki po jednej przekatenej PRAWO DOL
     {
         if (pionek[indeks_pionka].pole == 88 || pionek[indeks_pionka].pole == 68 || pionek[indeks_pionka].pole == 48 || pionek[indeks_pionka].pole == 28 || pionek[indeks_pionka].pole == 11 || pionek[indeks_pionka].pole == 13 || pionek[indeks_pionka].pole == 15 || pionek[indeks_pionka].pole == 17)
         {
@@ -525,15 +686,15 @@ void sprawdz_mozliwe_ruchy_damki(int indeks_pionka)
                 else
                 {
                     rpd = 8; // konczy petle liczenia ruchow
+                    id_pionka_ktory_moze_zbic_damka_pd = id_pionka;
                     // cout << "\n                 koniec ruchow damki na polu " << pionek[id_pionka].pole << "    rzekoma przeszkoda jako pionek na tym polu " << id_pionka << "\n\n";
                 }
             }
         }
     }
-    cout << "                         Wybrana damka moze wykonac " << liczba_ruchow_w_prawo_dol_damki << " ruchow w prawo dol   -- ta czynnosc jeszcze nie uwzglednia bicia!\n";
 
     // ruch w lewy dol
-    for (int rld = 0; rld < 7; rld++) // maksymalna liczba ruchow damki po jednej przekatenej LEWO DOL (DAMKA)
+    for (int rld = 0; rld < 7; rld++) // maksymalna liczba ruchow damki po jednej przekatenej LEWO DOL
     {
         if (pionek[indeks_pionka].pole == 71 || pionek[indeks_pionka].pole == 51 || pionek[indeks_pionka].pole == 31 || pionek[indeks_pionka].pole == 11 || pionek[indeks_pionka].pole == 13 || pionek[indeks_pionka].pole == 15 || pionek[indeks_pionka].pole == 17)
         {
@@ -570,12 +731,12 @@ void sprawdz_mozliwe_ruchy_damki(int indeks_pionka)
                 else
                 {
                     rld = 8;
+                    id_pionka_ktory_moze_zbic_damka_ld = id_pionka;
                     // cout << "\n                 koniec ruchow damki na polu " << pionek[id_pionka].pole << "    rzekoma przeszkoda jako pionek na tym polu " << id_pionka << "\n\n";
                 }
             }
         }
     }
-    cout << "                         Wybrana damka moze wykonac " << liczba_ruchow_w_lewo_dol_damki << " ruchow w lewo dol   -- ta czynnosc jeszcze nie uwzglednia bicia!\n\n";
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -586,6 +747,99 @@ void sprawdz_mozliwe_ruchy_damki(int indeks_pionka)
 //
 //
 //
+
+void sprawdz_mozliwe_bicia_damki(int indeks_pionka)
+{
+    zbijanie_damka_pg = true;
+    zbijanie_damka_lg = true;
+    zbijanie_damka_pd = true;
+    zbijanie_damka_ld = true;
+    //sprawdzanie czy w pg jest pionek ktorego mozna zbic///////////////////////////////////////
+    if (id_pionka_ktory_moze_zbic_damka_pg == -1)
+    {
+        zbijanie_damka_pg = false;
+    }
+    //jesli jest, to sprawdzamy czy na polu za nim znajduje sie pionek
+    else
+    {
+        for (int h = 0; h < 24; h++)
+        {
+            if ((pionek[id_pionka_ktory_moze_zbic_damka_pg].pole + 11) == pionek[h].pole)
+            {
+                zbijanie_damka_pg = false;
+            }
+        }
+        //sprawdzamy czy kolor pionka ktorego chcemy zbic jest przeciwny
+        if ((pionek[id_pionka_ktory_moze_zbic_damka_pg].kolor == pionek[indeks_pionka].kolor))
+        {
+            zbijanie_damka_pg = false;
+        }
+    }
+    //sprawdzanie czy w lg jest pionek ktorego mozna zbic///////////////////////////////////////
+    if (id_pionka_ktory_moze_zbic_damka_lg == -1)
+    {
+        zbijanie_damka_lg = false;
+    }
+    //jesli jest, to sprawdzamy czy na polu za nim znajduje sie pionek
+    else
+    {
+        for (int h = 0; h < 24; h++)
+        {
+            if ((pionek[id_pionka_ktory_moze_zbic_damka_lg].pole + 9) == pionek[h].pole)
+            {
+                zbijanie_damka_lg = false;
+            }
+        }
+        //sprawdzamy czy kolor pionka ktorego chcemy zbic jest przeciwny
+        if (pionek[id_pionka_ktory_moze_zbic_damka_lg].kolor == pionek[indeks_pionka].kolor)
+        {
+            zbijanie_damka_lg = false;
+        }
+    }
+    //sprawdzanie czy w pd jest pionek ktorego mozna zbic//////////////////////////////////////
+    if (id_pionka_ktory_moze_zbic_damka_pd == -1)
+    {
+        zbijanie_damka_pd = false;
+    }
+    //jesli jest, to sprawdzamy czy na polu za nim znajduje sie pionek
+    else
+    {
+        for (int h = 0; h < 24; h++)
+        {
+            if ((pionek[id_pionka_ktory_moze_zbic_damka_pd].pole - 9) == pionek[h].pole)
+            {
+                zbijanie_damka_pd = false;
+            }
+        }
+        //sprawdzamy czy kolor pionka ktorego chcemy zbic jest przeciwny
+        if (pionek[id_pionka_ktory_moze_zbic_damka_pg].kolor == pionek[indeks_pionka].kolor)
+        {
+            zbijanie_damka_pd = false;
+        }
+    }
+    //sprawdzanie czy w ld jest pionek ktorego mozna zbic//////////////////////////////////////
+    if (id_pionka_ktory_moze_zbic_damka_ld == -1)
+    {
+        zbijanie_damka_ld = false;
+    }
+    //jesli jest, to sprawdzamy czy na polu za nim znajduje sie pionek
+    else
+    {
+        for (int h = 0; h < 24; h++)
+        {
+            if ((pionek[id_pionka_ktory_moze_zbic_damka_ld].pole - 11) == pionek[h].pole)
+            {
+                zbijanie_damka_ld = false;
+            }
+        }
+        //sprawdzamy czy kolor pionka ktorego chcemy zbic jest przeciwny
+        if (pionek[id_pionka_ktory_moze_zbic_damka_ld].kolor == pionek[indeks_pionka].kolor)
+        {
+            zbijanie_damka_ld = false;
+        }
+    }
+}
+
 //
 //
 //
@@ -601,6 +855,16 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
         ruch_w_lewo_gora = true;
         ruch_w_prawo_dol = true;
         ruch_w_lewo_dol = true;
+
+        zbijanie_prawo_gora = true;
+        zbijanie_lewo_gora = true;
+        zbijanie_prawo_dol = true;
+        zbijanie_lewo_dol = true;
+
+        istnienie_zbijanego_pionka_pg = false;
+        istnienie_zbijanego_pionka_lg = false;
+        istnienie_zbijanego_pionka_pd = false;
+        istnienie_zbijanego_pionka_ld = false;
     }
     else if (pionek[indeks_pionka].typ == "damka")
     {
@@ -619,36 +883,64 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
     int numer_pola_do_ruchu = 0;
 
     sprawdz_mozliwy_ruch_pionka_krawedzie_funkcja(indeks_pionka);
+    sprawdz_mozliwe_bicie_pionka_krawedzie_funkcja(indeks_pionka);
 
     if (pionek[indeks_pionka].kolor == "bialy" && pionek[indeks_pionka].typ == "pionek")
+    {
         sprawdz_mozliwy_ruch_pionka_bialego_funkcja(pole_pionka);
+        sprawdz_mozliwe_bicie_pionka_funkcja(pole_pionka);
+    }
     else if (pionek[indeks_pionka].kolor == "czarny" && pionek[indeks_pionka].typ == "pionek")
+    {
         sprawdz_mozliwy_ruch_pionka_czarnego_funkcja(pole_pionka);
-
-    // działa i nie chce mi się tego zmieniać
-    //  ||
-    //  ||
-    //  \/
+        sprawdz_mozliwe_bicie_pionka_funkcja(pole_pionka);
+    }
 
     else if (pionek[indeks_pionka].typ == "damka") // DAMKI SPRAWDZANIE RUCHU
+    {
         sprawdz_mozliwe_ruchy_damki(indeks_pionka);
+        sprawdz_mozliwe_bicia_damki(indeks_pionka);
+    }
 
     //
     //
     //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
-    //
 
-    // dla pionkow
+    // dla damek -- komunikaty gdzie moze sie ruszyc
+    if (pionek[indeks_pionka].typ == "damka")
+    {
+        if (liczba_ruchow_w_prawo_gora_damki != 0)
+            cout << "\t Wybrana damka moze wykonac " << liczba_ruchow_w_prawo_gora_damki << " ruchow w prawo gora\n";
+
+        if (liczba_ruchow_w_lewo_gora_damki != 0)
+            cout << "\t Wybrana damka moze wykonac " << liczba_ruchow_w_lewo_gora_damki << " ruchow w lewo gora\n";
+
+        if (liczba_ruchow_w_prawo_dol_damki != 0)
+            cout << "\t Wybrana damka moze wykonac " << liczba_ruchow_w_prawo_dol_damki << " ruchow w prawo dol\n";
+
+        if (liczba_ruchow_w_lewo_dol_damki != 0)
+            cout << "\t Wybrana damka moze wykonac " << liczba_ruchow_w_lewo_dol_damki << " ruchow w lewo dol\n\n";
+
+        if (zbijanie_damka_pg == true)
+            cout << "damka MOZE zbijac PRAWO DO GORY" << endl;
+        else
+            cout << "damka NIE moze zbijac PRAWO DO GORY" << endl;
+        if (zbijanie_damka_lg == true)
+            cout << "damka MOZE zbijac LEWO DO GORY" << endl;
+        else
+            cout << "damka NIE moze zbijac LEWO DO GORY" << endl;
+        if (zbijanie_damka_pd == true)
+            cout << "damka MOZE zbijac PRAWO W DOL" << endl;
+        else
+            cout << "damka NIE moze zbijac PRAWO W DOL" << endl;
+        if (zbijanie_damka_ld == true)
+            cout << "damka MOZE zbijac LEWO W DOL" << endl;
+        else
+            cout << "damka NIE moze zbijac LEWO W DOL" << endl;
+        cout << endl;
+    }
+
+    // dla pionkow -- komunikaty gdzie moze sie ruszyc
     if (pionek[indeks_pionka].typ == "pionek")
     {
         if (ruch_w_prawo_gora == true)
@@ -669,7 +961,28 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
         if (ruch_w_lewo_dol == true)
             cout << "Pionek MOZE ruszyc sie w LEWO W DOL\n";
         else
-            cout << "Pionek NIE moze ruszyc sie w LEWO W DOL\n";
+            cout << "Pionek NIE moze ruszyc sie w LEWO W DOL\n\n";
+
+        if (zbijanie_prawo_gora == true && istnienie_zbijanego_pionka_pg == true)
+            cout << "Pionek MOZE zbijac w PRAWO DO GORY\n";
+        else
+            cout << "Pionek NIE moze zbijac w PRAWO DO GORY\n";
+
+        if (zbijanie_lewo_gora == true && istnienie_zbijanego_pionka_lg == true)
+            cout << "Pionek MOZE zbijac w LEWO DO GORY\n";
+        else
+            cout << "Pionek NIE moze zbijac w LEWO DO GORY\n";
+
+        if (zbijanie_prawo_dol == true && istnienie_zbijanego_pionka_pd == true)
+            cout << "Pionek MOZE zbijac w PRAWO W DOL\n";
+        else
+            cout << "Pionek NIE moze zbijac w PRAWO W DOL\n";
+
+        if (zbijanie_lewo_dol == true && istnienie_zbijanego_pionka_ld == true)
+            cout << "Pionek MOZE zbijac w LEWO W DOL\n";
+        else
+            cout << "Pionek NIE moze zbijac w LEWO W DOL\n";
+        cout << endl;
     }
 
     //
@@ -680,16 +993,16 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
     if (ruch_w_prawo_gora == true || ruch_w_lewo_gora == true || ruch_w_prawo_dol == true || ruch_w_lewo_dol == true)
         mozliwy_ruch = true;
 
+    if (zbijanie_prawo_gora == true || zbijanie_lewo_gora == true || zbijanie_prawo_dol == true || zbijanie_lewo_dol == true)
+        mozliwe_bicie = true;
+
     // dla damek
     if (liczba_ruchow_w_lewo_dol_damki > 0 || liczba_ruchow_w_prawo_dol_damki > 0 || liczba_ruchow_w_lewo_gora_damki > 0 || liczba_ruchow_w_prawo_gora_damki > 0)
         mozliwy_ruch = true;
 
-    //
-    //
-    //
-    //
-    //
-    //
+    if (zbijanie_damka_pg == true || zbijanie_damka_lg == true || zbijanie_damka_pd == true || zbijanie_damka_ld == true)
+        mozliwe_bicie = true;
+
     //
     //
     //
@@ -699,7 +1012,7 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
     //
     //
 
-    if (mozliwy_ruch == true)
+    if (mozliwy_ruch == true || mozliwe_bicie == true)
     {
     podano_zle_pole_do_ruchu:
         cout << "\nPodaj pole na planszy gdzie chesz ruszyc wybranego pionka: ";
@@ -723,8 +1036,33 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
             {
                 if ((((pionek[indeks_pionka].pole + 11) == numer_pola_do_ruchu) && (ruch_w_prawo_gora == true)) || (((pionek[indeks_pionka].pole + 9) == numer_pola_do_ruchu) && (ruch_w_lewo_gora == true)) || (((pionek[indeks_pionka].pole - 11) == numer_pola_do_ruchu) && (ruch_w_lewo_dol == true)) || (((pionek[indeks_pionka].pole - 9) == numer_pola_do_ruchu) && (ruch_w_prawo_dol == true)))
                 {
-                    cout << "Ruch pionka\n";
+                    // cout << "Ruch pionka\n";
                     pionek[indeks_pionka].pole = numer_pola_do_ruchu;
+                    aktualizuj_plansze();
+                }
+                else if ((((pionek[indeks_pionka].pole + 22) == numer_pola_do_ruchu) && (zbijanie_prawo_gora == true)) || (((pionek[indeks_pionka].pole + 18) == numer_pola_do_ruchu) && (zbijanie_lewo_gora == true)) || (((pionek[indeks_pionka].pole - 18) == numer_pola_do_ruchu) && (zbijanie_prawo_dol == true)) || (((pionek[indeks_pionka].pole - 22) == numer_pola_do_ruchu) && (zbijanie_lewo_dol == true)))
+                {
+                    //ustawienie pola pionka zbijanego na 0
+
+                    if ((((pionek[indeks_pionka].pole + 22) == numer_pola_do_ruchu) && (zbijanie_prawo_gora == true)))
+                    {
+                        pionek[sprawdz_indeks_pionka((pole_pionka + 11))].pole = 0;
+                    }
+                    if ((((pionek[indeks_pionka].pole + 18) == numer_pola_do_ruchu) && (zbijanie_lewo_gora == true)))
+                    {
+                        pionek[sprawdz_indeks_pionka((pole_pionka + 9))].pole = 0;
+                    }
+                    if ((((pionek[indeks_pionka].pole - 18) == numer_pola_do_ruchu) && (zbijanie_prawo_dol == true)))
+                    {
+                        pionek[sprawdz_indeks_pionka((pole_pionka - 9))].pole = 0;
+                    }
+                    if ((((pionek[indeks_pionka].pole - 22) == numer_pola_do_ruchu) && (zbijanie_lewo_dol == true)))
+                    {
+                        pionek[sprawdz_indeks_pionka((pole_pionka - 11))].pole = 0;
+                    }
+
+                    pionek[indeks_pionka].pole = numer_pola_do_ruchu;
+
                     aktualizuj_plansze();
                 }
                 else // nie wykonano ruchu
@@ -739,11 +1077,35 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
                 {
                     if (numer_pola_do_ruchu == pola_gdzie_damka_moze_sie_ruszyc[i])
                     {
-                        cout << "Ruch damki\n";
+                        // cout << "Ruch damki\n";
                         pionek[indeks_pionka].pole = pola_gdzie_damka_moze_sie_ruszyc[i];
                         aktualizuj_plansze();
                         wykonano_ruch = true;
                     }
+                }
+
+                if ((((pionek[id_pionka_ktory_moze_zbic_damka_pg].pole + 11) == numer_pola_do_ruchu) && (zbijanie_damka_pg == true)) || (((pionek[id_pionka_ktory_moze_zbic_damka_lg].pole + 9) == numer_pola_do_ruchu) && (zbijanie_damka_lg == true)) || (((pionek[id_pionka_ktory_moze_zbic_damka_pd].pole - 9) == numer_pola_do_ruchu) && (zbijanie_damka_pd == true)) || (((pionek[id_pionka_ktory_moze_zbic_damka_ld].pole - 11) == numer_pola_do_ruchu) && (zbijanie_damka_ld == true)))
+                {
+                    if ((((pionek[id_pionka_ktory_moze_zbic_damka_pg].pole + 11) == numer_pola_do_ruchu) && (zbijanie_damka_pg == true)))
+                    {
+                        pionek[id_pionka_ktory_moze_zbic_damka_pg].pole = 0;
+                    }
+                    if ((((pionek[id_pionka_ktory_moze_zbic_damka_lg].pole + 9) == numer_pola_do_ruchu) && (zbijanie_damka_lg == true)))
+                    {
+                        pionek[id_pionka_ktory_moze_zbic_damka_lg].pole = 0;
+                    }
+                    if ((((pionek[id_pionka_ktory_moze_zbic_damka_pd].pole - 9) == numer_pola_do_ruchu) && (zbijanie_damka_pd == true)))
+                    {
+                        pionek[id_pionka_ktory_moze_zbic_damka_pd].pole = 0;
+                    }
+                    if ((((pionek[id_pionka_ktory_moze_zbic_damka_ld].pole - 11) == numer_pola_do_ruchu) && (zbijanie_damka_ld == true)))
+                    {
+                        pionek[id_pionka_ktory_moze_zbic_damka_ld].pole = 0;
+                    }
+
+                    pionek[indeks_pionka].pole = numer_pola_do_ruchu;
+                    aktualizuj_plansze();
+                    wykonano_ruch = true;
                 }
 
                 if (wykonano_ruch == false)
@@ -751,7 +1113,6 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
             }
         }
     }
-    delete[] pola_gdzie_damka_moze_sie_ruszyc;
 
     cout << endl;
 }
@@ -774,16 +1135,34 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
 void wykonaj_ruch(string nazwa_pola)
 {
     int nr_pola = 0;
-    int id_pola = 0;
+    int id_podanego_pionka = 0;
+
+    wybrano_poprawnie_pionka_tury = false;
 
     nr_pola = sprawdz_numer_pola(nazwa_pola);
     if (nr_pola == 0)
         return;
-    id_pola = sprawdz_indeks_pionka(nr_pola);
-    if (id_pola == -1) // nie moze byc 0, bo to jest pierwszy indeks pionka
+    id_podanego_pionka = sprawdz_indeks_pionka(nr_pola);
+    if (id_podanego_pionka == -1) // nie moze byc 0, bo to jest pierwszy indeks pionka
         return;
 
-    ruch_pionka(nr_pola, id_pola);
+    for (int i = 0; i < 12; i++)
+    {
+        if (czyja_tura == true && id_podanego_pionka == i) // podano pionka białego w turze dla białych
+        {
+            wybrano_poprawnie_pionka_tury = true;
+            ruch_pionka(nr_pola, id_podanego_pionka);
+        }
+    }
+
+    for (int i = 12; i < 24; i++)
+    {
+        if (czyja_tura == false && id_podanego_pionka == i) // podanno pionka czarnego w turze dla czarnych
+        {
+            wybrano_poprawnie_pionka_tury = true;
+            ruch_pionka(nr_pola, id_podanego_pionka);
+        }
+    }
 }
 
 //
@@ -792,6 +1171,94 @@ void wykonaj_ruch(string nazwa_pola)
 //
 //
 //
+
+void wykonaj_ruch_komputera(int id)
+{
+    // getch();
+
+    int numer_pola_do_ruchu = 0;
+    bool poprawy_ruch_komputera = false;
+
+podano_zle_pole_do_ruchu_K:
+
+    if (pionek[id].typ == "pionek")
+    {
+        int los_ruchu = rand() % 2;
+        if (pionek[id].kolor == "czarny")
+        {
+            if (los_ruchu == 0)
+                numer_pola_do_ruchu = (pionek[id].pole - 9);
+            else if (los_ruchu == 1)
+                numer_pola_do_ruchu = (pionek[id].pole - 11);
+        }
+        else if (pionek[id].kolor == "bialy")
+        {
+            if (los_ruchu == 0)
+                numer_pola_do_ruchu = (pionek[id].pole + 9);
+            else if (los_ruchu == 1)
+                numer_pola_do_ruchu = (pionek[id].pole + 11);
+        }
+    }
+    else if (pionek[id].typ == "damka")
+    {
+        sprawdz_mozliwe_ruchy_damki(id);
+        vector<int> pola_damki_komputera;
+        for (int i = 0; i < 32; i++)
+        {
+            if (pola_gdzie_damka_moze_sie_ruszyc[i] != 0)
+                pola_damki_komputera.push_back(pola_gdzie_damka_moze_sie_ruszyc[i]);
+        }
+
+        int los_ruchu = rand() % pola_damki_komputera.size();
+        numer_pola_do_ruchu = pola_damki_komputera[los_ruchu];
+    }
+
+    if (sprawdz_indeks_pionka(numer_pola_do_ruchu) != -1)
+        goto podano_zle_pole_do_ruchu_K;
+
+    for (int i = 0; i < 32; i++)
+    {
+        if (numer_pola_do_ruchu == wybrane_pole[i].pole)
+            poprawy_ruch_komputera = true;
+    }
+
+    if (poprawy_ruch_komputera == true)
+    {
+        if (pionek[id].typ == "pionek")
+        {
+            if (((pionek[id].pole + 11) == numer_pola_do_ruchu) || ((pionek[id].pole + 9) == numer_pola_do_ruchu) || ((pionek[id].pole - 11) == numer_pola_do_ruchu) || ((pionek[id].pole - 9) == numer_pola_do_ruchu))
+            {
+                cout << "Ruch pionka (KOMPUTER)\n";
+                pionek[id].pole = numer_pola_do_ruchu;
+                aktualizuj_plansze();
+            }
+            else // nie wykonano ruchu
+                goto podano_zle_pole_do_ruchu_K;
+        }
+
+        if (pionek[id].typ == "damka")
+        {
+            bool wykonano_ruch = false;
+
+            for (int i = 0; i < 32; i++)
+            {
+                if (numer_pola_do_ruchu == pola_gdzie_damka_moze_sie_ruszyc[i])
+                {
+                    cout << "Ruch damki (KOMPUTER)\n";
+                    pionek[id].pole = pola_gdzie_damka_moze_sie_ruszyc[i];
+                    aktualizuj_plansze();
+                    wykonano_ruch = true;
+                }
+            }
+
+            if (wykonano_ruch == false)
+                goto podano_zle_pole_do_ruchu_K;
+        }
+    }
+    else // poprawy_ruch_komputera == false
+        goto podano_zle_pole_do_ruchu_K;
+}
+
 //
 //
 //
@@ -838,16 +1305,14 @@ void ile_mozliwych_ruchow_pionkow_funkcja(int indeks_pionka)
 
 void sprawdz_czy_jest_mozliwy_ruch()
 {
-    bool mozliwy_ruch_bialych = true, mozliwy_ruch_czarnych = true;
+    mozliwy_ruch_bialych = true;
+    mozliwy_ruch_czarnych = true;
     ile_mozliwych_ruchow_bialych = 0;
     ile_mozliwych_ruchow_czarnych = 0;
 
-    // int lista_indeksow_p_i_d_ktore_moga_wykonac_ruch[24];
-    int *lista_indeksow_p_i_d_ktore_moga_wykonac_ruch = new int[24];
-
     for (int i = 0; i < 24; i++)
     {
-        lista_indeksow_p_i_d_ktore_moga_wykonac_ruch[i] = 0;
+        lista_indeksow_p_i_d_ktore_moga_wykonac_ruch[i] = -1; // -1 bo 0 to indeks pierwszego pionka
     }
 
     for (int i = 0; i < 24; i++) // sprawdza mozliwe ruchy pionkow
@@ -898,22 +1363,354 @@ void sprawdz_czy_jest_mozliwy_ruch()
     if (ile_mozliwych_ruchow_czarnych == 0)
         mozliwy_ruch_czarnych = false;
 
-    cout << "\n   1/0 biale --> " << mozliwy_ruch_bialych << "    1/0 czarne --> " << mozliwy_ruch_czarnych;
-    cout << "\n   ile biale --> " << ile_mozliwych_ruchow_bialych << "    ile czarne --> " << ile_mozliwych_ruchow_czarnych << "\n\n";
+    // cout << "\n   1/0 biale --> " << mozliwy_ruch_bialych << "    1/0 czarne --> " << mozliwy_ruch_czarnych;
+    // cout << "\n   ile biale --> " << ile_mozliwych_ruchow_bialych << "    ile czarne --> " << ile_mozliwych_ruchow_czarnych << "\n\n";
 
-    cout << "indeksy pionkow i damek, ktore moga wykonac ruch:\n";
-    for (int i = 0; i < 24; i++)
-    {
-        if (lista_indeksow_p_i_d_ktore_moga_wykonac_ruch[i] != 0)
-            cout << "   " << lista_indeksow_p_i_d_ktore_moga_wykonac_ruch[i] << "\n";
-    }
-
-    delete[] lista_indeksow_p_i_d_ktore_moga_wykonac_ruch;
-    delete[] pola_gdzie_damka_moze_sie_ruszyc;
+    // cout << "indeksy pionkow i damek, ktore moga wykonac ruch:\n";
+    // for (int i = 0; i < 24; i++)
+    // {
+    //     if (lista_indeksow_p_i_d_ktore_moga_wykonac_ruch[i] != -1) // -1 bo 0 to indeks pierwszego pionka
+    //         cout << "   " << lista_indeksow_p_i_d_ktore_moga_wykonac_ruch[i] << "\t" << i << "\t" << pionek[i].kolor << "\t" << pionek[i].typ << "\n";
+    // }
 }
 
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+void sprawdz_zakonczenie_gry()
+{
+    bool czy_sa_biale_pionki_na_planszy = false, czy_sa_czarne_pionki_na_planszy = false;
+    for (int i = 0; i < 24; i++)
+    {
+        if (i < 12 && czy_sa_biale_pionki_na_planszy == false) // biale
+        {
+            if (pionek[i].pole != 0)
+                czy_sa_biale_pionki_na_planszy = true;
+        }
+        else if (i >= 12 && czy_sa_czarne_pionki_na_planszy == false) // czarne
+        {
+            if (pionek[i].pole != 0)
+                czy_sa_czarne_pionki_na_planszy = true;
+        }
+    }
+
+    if (czy_sa_biale_pionki_na_planszy == true && czy_sa_czarne_pionki_na_planszy == true) // wyłączenie tych opcji przy możliwym wykonaniu zbicia
+    {
+        if (mozliwy_ruch_bialych == false && mozliwy_ruch_czarnych == false)
+        {
+            sprawdz_pole = "0";
+            cout << "\n\tRemis, biale i czarne pionki nie moga wykonac ruchu\n\n";
+            getch();
+            ustawienie_pionkow_na_planszy();
+        }
+        else if (mozliwy_ruch_bialych == false && mozliwy_ruch_czarnych == true)
+        {
+            sprawdz_pole = "0";
+            cout << "\n\tbiale pionki nie moga wykonac ruchu\n\n";
+            getch();
+            ustawienie_pionkow_na_planszy();
+        }
+        else if (mozliwy_ruch_bialych == true && mozliwy_ruch_czarnych == false)
+        {
+            sprawdz_pole = "0";
+            cout << "\n\tczarne pionki nie moga wykonac ruchu\n\n";
+            getch();
+            ustawienie_pionkow_na_planszy();
+        }
+    }
+    else if (czy_sa_biale_pionki_na_planszy == true && czy_sa_czarne_pionki_na_planszy == false)
+    {
+        sprawdz_pole = "0";
+        cout << "\n\tbiale pionki wygraly\n\n";
+        getch();
+        ustawienie_pionkow_na_planszy();
+    }
+    else if (czy_sa_biale_pionki_na_planszy == false && czy_sa_czarne_pionki_na_planszy == true)
+    {
+        sprawdz_pole = "0";
+        cout << "\n\tczarne pionki wygraly\n\n";
+        getch();
+        ustawienie_pionkow_na_planszy();
+    }
+}
+
+//
+//
+//
+//
+//
+//
+//
+
+void GraczVsGracz()
+{
+    aktualizuj_plansze();
+
+    while (sprawdz_pole != "0") // wyjście z gry turowej
+    {
+
+    powtorka_ruchu_turowego:
+        if (czyja_tura == true)
+            cout << "Ruch bialych\n";
+        else if (czyja_tura == false)
+            cout << "Ruch czarnych\n";
+        cout << "Podaj pole pionka: ";
+        cin >> sprawdz_pole;
+
+        if (sprawdz_pole != "exit" && sprawdz_pole != "0") // przerwanie ruchu
+        {
+            wykonaj_ruch(sprawdz_pole);
+
+            if ((mozliwy_ruch == false && mozliwe_bicie == false) || wybrano_poprawnie_pionka_tury == false)
+            {
+                cout << "Wybrany pionek nie moze wykonac ruchu lub nie znaleziono pionka!\n";
+                goto powtorka_ruchu_turowego;
+            }
+            mozliwy_ruch = false;
+            mozliwe_bicie = false;
+        }
+
+        zamiana_pionka_na_damke();
+
+        //     Kończy gre w trybie turowym [początek] ------- NIE UWZGLEDNIA JESZCZE MOZLIWOSCI ZBIJANIA
+
+        sprawdz_czy_jest_mozliwy_ruch();
+
+        sprawdz_zakonczenie_gry();
+
+        //     Kończy gre w trybie turowym [koniec] ------- NIE UWZGLEDNIA JESZCZE MOZLIWOSCI ZBIJANIA
+
+        czyja_tura = !czyja_tura; // zmiana tury
+    }
+}
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+void GraczVsKomputer()
+{
+    aktualizuj_plansze();
+
+    while (sprawdz_pole != "0") // wyjście z gry turowej
+    {
+        if (czyja_tura == true) // ruch gracza
+        {
+
+        powtorka_ruchu_turowego_GvsK:
+            cout << "Ruch bialych, gracza\n";
+            cout << "Podaj pole pionka: ";
+            cin >> sprawdz_pole;
+
+            if (sprawdz_pole != "exit" && sprawdz_pole != "0") // przerwanie ruchu
+            {
+                wykonaj_ruch(sprawdz_pole);
+
+                if (mozliwy_ruch == false || wybrano_poprawnie_pionka_tury == false)
+                {
+                    cout << "Wybrany pionek nie moze wykonac ruchu lub nie znaleziono pionka! (G vs. K)\n";
+                    goto powtorka_ruchu_turowego_GvsK;
+                }
+                mozliwy_ruch = false;
+            }
+            zamiana_pionka_na_damke();
+
+            //     Kończy gre w trybie turowym [początek] ------- NIE UWZGLEDNIA JESZCZE MOZLIWOSCI ZBIJANIA
+
+            sprawdz_czy_jest_mozliwy_ruch();
+            sprawdz_zakonczenie_gry();
+
+            //     Kończy gre w trybie turowym [koniec] ------- NIE UWZGLEDNIA JESZCZE MOZLIWOSCI ZBIJANIA
+
+            czyja_tura = !czyja_tura; // zmiana tury
+        }
+
+        else if (czyja_tura == false) // ruch komputera
+        {
+            int lista_id_ruchow_cz_k[12];
+            int n_los = 0;
+
+            for (int i = 0; i < 12; i++)
+            {
+                lista_id_ruchow_cz_k[i] = -1;
+            }
+
+            cout << "Ruch czarnych, komputera\n";
+            getch();
+
+            sprawdz_czy_jest_mozliwy_ruch();
+
+            {
+                int ii = 0;
+                for (int i = 12; i < 24; i++)
+                {
+                    if (lista_indeksow_p_i_d_ktore_moga_wykonac_ruch[i] != -1)
+                    {
+                        lista_id_ruchow_cz_k[ii] = lista_indeksow_p_i_d_ktore_moga_wykonac_ruch[i];
+                        ii++;
+                        n_los++;
+                    }
+                }
+            }
+
+            int los_id = rand() % n_los;
+
+            //cout << "\n\n\t n_los " << n_los << "\t los_id " << los_id << "\t pionek o wylos. id " << lista_id_ruchow_cz_k[los_id] << "\n";
+
+            wykonaj_ruch_komputera(lista_id_ruchow_cz_k[los_id]);
+
+            zamiana_pionka_na_damke();
+
+            //     Kończy gre w trybie turowym [początek] ------- NIE UWZGLEDNIA JESZCZE MOZLIWOSCI ZBIJANIA
+
+            sprawdz_czy_jest_mozliwy_ruch();
+            sprawdz_zakonczenie_gry();
+
+            //     Kończy gre w trybie turowym [koniec] ------- NIE UWZGLEDNIA JESZCZE MOZLIWOSCI ZBIJANIA
+
+            czyja_tura = !czyja_tura; // zmiana tury
+        }
+    }
+}
+//
+//
+//
+//
+//
+//
+//
+//
+
+void KomputerVsKomputer()
+{
+    int tempo_gry = 100;
+
+    aktualizuj_plansze();
+
+    while (sprawdz_pole != "0") // pętla gry komputerów
+    {
+
+        if (czyja_tura == true) // ruch komputera 1 - biale
+        {
+            int lista_id_ruchow_b_k[12];
+            int n_los = 0;
+
+            for (int i = 0; i < 12; i++)
+            {
+                lista_id_ruchow_b_k[i] = -1;
+            }
+
+            cout << "Ruch bialych, komputera 1\n";
+
+            sprawdz_czy_jest_mozliwy_ruch();
+
+            {
+                int ii = 0;
+                for (int i = 0; i < 12; i++)
+                {
+                    if (lista_indeksow_p_i_d_ktore_moga_wykonac_ruch[i] != -1)
+                    {
+                        lista_id_ruchow_b_k[ii] = lista_indeksow_p_i_d_ktore_moga_wykonac_ruch[i];
+                        ii++;
+                        n_los++;
+                    }
+                }
+            }
+
+            int los_id = rand() % n_los;
+
+            //cout << "\n\n\t n_los " << n_los << "\t los_id " << los_id << "\t pionek o wylos. id " << lista_id_ruchow_b_k[los_id] << "\n";
+
+            wykonaj_ruch_komputera(lista_id_ruchow_b_k[los_id]);
+
+            zamiana_pionka_na_damke();
+
+            //     Kończy gre w trybie turowym [początek] ------- NIE UWZGLEDNIA JESZCZE MOZLIWOSCI ZBIJANIA
+
+            sprawdz_czy_jest_mozliwy_ruch();
+            sprawdz_zakonczenie_gry();
+
+            //     Kończy gre w trybie turowym [koniec] ------- NIE UWZGLEDNIA JESZCZE MOZLIWOSCI ZBIJANIA
+
+            czyja_tura = !czyja_tura; // zmiana tury
+            //getch();
+        }
+
+        else if (czyja_tura == false) // ruch komputera 2 - czarne
+        {
+            int lista_id_ruchow_cz_k[12];
+            int n_los = 0;
+
+            for (int i = 0; i < 12; i++)
+            {
+                lista_id_ruchow_cz_k[i] = -1;
+            }
+
+            cout << "Ruch czarnych, komputera 2\n";
+
+            sprawdz_czy_jest_mozliwy_ruch();
+
+            {
+                int ii = 0;
+                for (int i = 12; i < 24; i++)
+                {
+                    if (lista_indeksow_p_i_d_ktore_moga_wykonac_ruch[i] != -1)
+                    {
+                        lista_id_ruchow_cz_k[ii] = lista_indeksow_p_i_d_ktore_moga_wykonac_ruch[i];
+                        ii++;
+                        n_los++;
+                    }
+                }
+            }
+
+            int los_id = rand() % n_los;
+
+            //cout << "\n\n\t n_los " << n_los << "\t los_id " << los_id << "\t pionek o wylos. id " << lista_id_ruchow_cz_k[los_id] << "\n";
+
+            wykonaj_ruch_komputera(lista_id_ruchow_cz_k[los_id]);
+
+            zamiana_pionka_na_damke();
+
+            //     Kończy gre w trybie turowym [początek] ------- NIE UWZGLEDNIA JESZCZE MOZLIWOSCI ZBIJANIA
+
+            sprawdz_czy_jest_mozliwy_ruch();
+            sprawdz_zakonczenie_gry();
+
+            //     Kończy gre w trybie turowym [koniec] ------- NIE UWZGLEDNIA JESZCZE MOZLIWOSCI ZBIJANIA
+
+            czyja_tura = !czyja_tura; // zmiana tury
+            //getch();
+        }
+
+        Sleep(tempo_gry);
+    }
+}
+
 //
 //
 //
@@ -943,6 +1740,7 @@ void sprawdz_czy_jest_mozliwy_ruch()
 
 int main()
 {
+    srand(time(NULL));
 
     //---------------------------------------------------------------- ustawienia pod sprawdzanie pionka na polu na planszy przez gracza
 
@@ -1016,14 +1814,32 @@ int main()
 
     //------------------------------------------------
 
-    pionek[12].pole = 42;
+    // pionek[12].pole = 42;
     // pionek[13].pole = 44;
     // pionek[14].pole = 46;
     // pionek[15].pole = 48;
+    // pionek[4].pole = 88;
+    // pionek[19].pole = 11;
 
-    pionek[13].typ = "damka";
-    pionek[10].typ = "damka";
-    pionek[11].typ = "damka";
+    // pionek[0].pole = 42;
+    // pionek[1].pole = 44;
+    // pionek[2].pole = 46;
+    // pionek[23].pole = 51;
+    // pionek[22].pole = 53;
+    // pionek[21].pole = 55;
+
+    for (int i = 4; i < 22; i++)
+    {
+        pionek[i].pole = 0;
+    }
+    pionek[1].typ = "damka";
+    pionek[1].znak = "\3";
+    pionek[2].typ = "damka";
+    pionek[2].znak = "\3";
+    pionek[22].typ = "damka";
+    pionek[22].znak = "\6";
+    pionek[23].typ = "damka";
+    pionek[23].znak = "\6";
 
     //------------------------------------------------
 
@@ -1041,21 +1857,20 @@ int main()
 
     while (wybor != "exit" && wybor != "0")
     {
+        sprawdz_pole = " ";
+
+        system("cls");
         cout << "----------------------------\n";
         cout << "Warcaby\n\nWpisz \"start\" lub 1 aby rozpoczac\nAby zakonczyc program \"exit\" lub 0\n";
         cout << "Aby zresetowac porgram \"reset\" lub 2\n";
-
-        //
-        //
-        cout << "sprawdz mozliwosc ruchow -- 3\n";
+        cout << "rozpoczyna gre turowa -- 3 \n";
         //
         //
 
         cin >> wybor;
 
-        if (wybor == "start" || wybor == "1")
+        if (wybor == "start" || wybor == "1") // pojedyńczy ruch
         {
-            system("cls");
             aktualizuj_plansze(); // pierwsze ustawienie
 
         powtorka_ruchu:
@@ -1066,12 +1881,13 @@ int main()
             {
                 wykonaj_ruch(sprawdz_pole);
 
-                if (mozliwy_ruch == false)
+                if (mozliwy_ruch == false && mozliwe_bicie == false)
                 {
-                    cout << "Wybrany pionek nie moze wykonac ruchu lub nie znaleziono pionka!\n";
+                    cout << "Wybrany pionek nie moze wykonac ruchu, bicia lub nie znaleziono pionka!\n";
                     goto powtorka_ruchu;
                 }
                 mozliwy_ruch = false;
+                mozliwe_bicie = false;
             }
         }
         else if (wybor == "reset" || wybor == "2")
@@ -1079,14 +1895,36 @@ int main()
             system("cls");
             ustawienie_pionkow_na_planszy();
         }
-        else if (wybor == "3")
+        //----------------------------------------------------------------------------------------------------------------------------------------- GRA TUROWA
+
+        else if (wybor == "3") // gra turowa, "0" aby z niej wyjść
         {
-            sprawdz_czy_jest_mozliwy_ruch();
+            kto_gra = "0";
+            while (kto_gra != "1" && kto_gra != "2" && kto_gra != "3") // kto_gra != "1" && kto_gra != "2" && kto_gra != "3"
+            {
+                system("cls");
+                cout << "Podaj kto gra:\n gracz vs. gracz - 1\n gracz vs. komputer - 2 (w procesie tworzenia)\n komputer vs. komputer - 3 xd\n";
+                cin >> kto_gra;
+                cout << kto_gra << endl;
+            }
+
+            czyja_tura = true; // "true" - ruch bialych, "false" - ruch czarnych,   białe zaczynają gre
+
+            if (kto_gra == "1")
+                GraczVsGracz();
+            else if (kto_gra == "2")
+                GraczVsKomputer();
+            else if (kto_gra == "3")
+                KomputerVsKomputer();
         }
+
+        //----------------------------------------------------------------------------------------------------------------------------------------- GRA TUROWA
     }
 
     //--------------------------------------------------------------------------------------------------
 
-    // getch();
+    cout << "\n\n\t\t\tKoniec programu\n\n\n";
+
+    //getch();
     return 0;
 }
