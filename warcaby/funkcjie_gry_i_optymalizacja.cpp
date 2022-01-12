@@ -82,17 +82,7 @@ char pauza; // do debugera w vs
 // czarne pionki: \1, damki: \6
 //
 
-//      -------------------------------
-//    8 |   82      84      86      88|
-//    7 |71     73      75      77    |
-//    6 |   62      64      66      68|
-//    5 |51     53      55      57    |
-//    4 |   42      44      46      48|
-//    3 |31     33      35      37    |
-//    2 |   22      24      26      28|
-//    1 |11     13      15      17    |
-//      -------------------------------
-//       A   B   C   D   E   F   G   H
+
 
 //       +---+---+---+---+---+---+---+---+
 //     8 |   |82 |   |84 |   | 86|   | 88|
@@ -112,21 +102,43 @@ char pauza; // do debugera w vs
 //     1 | 11|   | 13|   | 15|   | 17|   |
 //       +---+---+---+---+---+---+---+---+
 //         A   B   C   D   E   F   G   H
+//
+//
+//
+//FUNKCJE____FUNKCJE____FUNKCJE____FUNKCJE____FUNKCJE____FUNKCJE____
+void ustawienie_pionkow_na_planszy();
+void zamiana_pionka_na_damke();
+void aktualizuj_plansze();
+int sprawdz_numer_pola(string nazwa_pola_f);
+int sprawdz_indeks_pionka(int nr_pola);
+string sprawdz_kolor_pionka(int nr_pola);
 
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+void sprawdz_mozliwy_ruch_pionka_krawedzie_funkcja(int indeks_pionka);
+void sprawdz_mozliwe_bicie_pionka_krawedzie_funkcja(int indeks_pionka);
+
+void sprawdz_mozliwy_ruch_pionka_bialego_funkcja(int pole_pionka);
+void sprawdz_mozliwy_ruch_pionka_czarnego_funkcja(int pole_pionka);
+void sprawdz_mozliwe_bicie_pionka_funkcja(int pole_pionka);
+void sprawdz_mozliwe_ruchy_damki(int indeks_pionka);
+void sprawdz_mozliwe_bicia_damki(int indeks_pionka);
+
+void ruch_pionka(int pole_pionka, int indeks_pionka);
+
+void wykonaj_ruch(string nazwa_pola);
+void wykonaj_ruch_komputera(int id);
+
+void ile_mozliwych_ruchow_pionkow_funkcja(int indeks_pionka);
+void sprawdz_czy_jest_mozliwy_ruch();
+
+void sprawdz_zakonczenie_gry();
+void GraczVsGracz();
+void GraczVsKomputer();
+void KomputerVsKomputer();
+
+
+
+
+
 
 void ustawienie_pionkow_na_planszy()
 {
@@ -1860,50 +1872,30 @@ int main()
         sprawdz_pole = " ";
 
         system("cls");
-        cout << "----------------------------\n";
-        cout << "Warcaby\n\nWpisz \"start\" lub 1 aby rozpoczac\nAby zakonczyc program \"exit\" lub 0\n";
-        cout << "Aby zresetowac porgram \"reset\" lub 2\n";
-        cout << "rozpoczyna gre turowa -- 3 \n";
+        cout << "                                         \n";
+        cout << "nacisnij \"1\" aby ZACZAC GRE" << endl << endl;
+        cout << "\"exit\" lub 0 - wyjdz z gry" << endl;
+        cout << "\"reset\" lub 2  - reset gry" << endl;
         //
         //
 
         cin >> wybor;
 
-        if (wybor == "start" || wybor == "1") // pojedyńczy ruch
-        {
-            aktualizuj_plansze(); // pierwsze ustawienie
 
-        powtorka_ruchu:
-            cout << "Podaj pole pionka: ";
-            cin >> sprawdz_pole;
-
-            if (sprawdz_pole != "exit" && sprawdz_pole != "0") // do przerwania podawania pola
-            {
-                wykonaj_ruch(sprawdz_pole);
-
-                if (mozliwy_ruch == false && mozliwe_bicie == false)
-                {
-                    cout << "Wybrany pionek nie moze wykonac ruchu, bicia lub nie znaleziono pionka!\n";
-                    goto powtorka_ruchu;
-                }
-                mozliwy_ruch = false;
-                mozliwe_bicie = false;
-            }
-        }
-        else if (wybor == "reset" || wybor == "2")
+        if (wybor == "reset" || wybor == "2")
         {
             system("cls");
             ustawienie_pionkow_na_planszy();
         }
         //----------------------------------------------------------------------------------------------------------------------------------------- GRA TUROWA
 
-        else if (wybor == "3") // gra turowa, "0" aby z niej wyjść
+        else if (wybor == "1") // gra turowa, "0" aby z niej wyjść
         {
             kto_gra = "0";
             while (kto_gra != "1" && kto_gra != "2" && kto_gra != "3") // kto_gra != "1" && kto_gra != "2" && kto_gra != "3"
             {
                 system("cls");
-                cout << "Podaj kto gra:\n gracz vs. gracz - 1\n gracz vs. komputer - 2 (w procesie tworzenia)\n komputer vs. komputer - 3 xd\n";
+                cout << "Podaj kto gra:\n gracz vs. gracz - 1\n gracz vs. komputer - 2 \n komputer vs. komputer - 3 \n";
                 cin >> kto_gra;
                 cout << kto_gra << endl;
             }
