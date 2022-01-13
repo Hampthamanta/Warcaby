@@ -993,20 +993,38 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
 
                     if ((((pionek[indeks_pionka].pole + 22) == numer_pola_do_ruchu) && (zbijanie_prawo_gora == true)))
                     {
-                        pionek[sprawdz_indeks_pionka((pole_pionka + 11))].pole = 0;
+                        int h = sprawdz_indeks_pionka((pionek[indeks_pionka].pole + 11));
+                        if (h == -1)
+                            goto podano_zle_pole_do_ruchu;
+                        else
+                            pionek[h].pole = 0;
                     }
-                    if ((((pionek[indeks_pionka].pole + 18) == numer_pola_do_ruchu) && (zbijanie_lewo_gora == true)))
+                    else if ((((pionek[indeks_pionka].pole + 18) == numer_pola_do_ruchu) && (zbijanie_lewo_gora == true)))
                     {
-                        pionek[sprawdz_indeks_pionka((pole_pionka + 9))].pole = 0;
+                        int h = sprawdz_indeks_pionka((pionek[indeks_pionka].pole + 9));
+                        if (h == -1)
+                            goto podano_zle_pole_do_ruchu;
+                        else
+                            pionek[h].pole = 0;
                     }
-                    if ((((pionek[indeks_pionka].pole - 18) == numer_pola_do_ruchu) && (zbijanie_prawo_dol == true)))
+                    else if ((((pionek[indeks_pionka].pole - 18) == numer_pola_do_ruchu) && (zbijanie_prawo_dol == true)))
                     {
-                        pionek[sprawdz_indeks_pionka((pole_pionka - 9))].pole = 0;
+                        int h = sprawdz_indeks_pionka((pionek[indeks_pionka].pole - 9));
+                        if (h == -1)
+                            goto podano_zle_pole_do_ruchu;
+                        else
+                            pionek[h].pole = 0;
                     }
-                    if ((((pionek[indeks_pionka].pole - 22) == numer_pola_do_ruchu) && (zbijanie_lewo_dol == true)))
+                    else if ((((pionek[indeks_pionka].pole - 22) == numer_pola_do_ruchu) && (zbijanie_lewo_dol == true)))
                     {
-                        pionek[sprawdz_indeks_pionka((pole_pionka - 11))].pole = 0;
+                        int h = sprawdz_indeks_pionka((pionek[indeks_pionka].pole - 11));
+                        if (h == -1)
+                            goto podano_zle_pole_do_ruchu;
+                        else
+                            pionek[h].pole = 0;
                     }
+                    else
+                        goto podano_zle_pole_do_ruchu;
 
                     pionek[indeks_pionka].pole = numer_pola_do_ruchu;
 
