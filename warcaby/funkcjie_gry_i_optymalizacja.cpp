@@ -1029,7 +1029,9 @@ void ruch_pionka(int pole_pionka, int indeks_pionka)
             numer_pola_do_ruchu = sprawdz_numer_pola(nazwa_pola_f2);
 
             if ((numer_pola_do_ruchu == 0))
+            {
                 goto podano_zle_pole_do_ruchu;
+            }
 
             for (int i = 0; i < 24; i++)
             {
@@ -1487,6 +1489,7 @@ void GraczVsGracz()
 
             if ((mozliwy_ruch == false && mozliwe_bicie == false) || wybrano_poprawnie_pionka_tury == false)
             {
+                aktualizuj_plansze();
                 cout << "Wybrany pionek nie moze wykonac ruchu lub nie znaleziono pionka!\n";
                 goto powtorka_ruchu_turowego;
             }
