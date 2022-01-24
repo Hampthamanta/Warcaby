@@ -1813,7 +1813,7 @@ void GraczVsKomputer()
 
 void KomputerVsKomputer()
 {
-    int tempo_gry = 50;
+    int tempo_gry = 300;
 
     aktualizuj_plansze();
 
